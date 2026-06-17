@@ -1,0 +1,10 @@
+<svg preserveAspectRatio="none" width="100%" height="100%" overflow="visible" style="display: block;" viewBox="0 0 1920 142" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id=".hero-bottom-transition" clip-path="url(#clip0_0_6)">
+<path id="Subtract" d="M1920 146L0 146L0 4.92871C248.846 49.1772 587.212 76.3877 960.003 76.3877C1332.79 76.3877 1671.15 49.1766 1920 4.92871V146Z" fill="var(--fill-0, #F5F7FD)"/>
+</g>
+<defs>
+<clipPath id="clip0_0_6">
+<rect width="1920" height="142" fill="white"/>
+</clipPath>
+</defs>
+</svg>

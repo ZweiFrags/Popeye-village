@@ -1,0 +1,472 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  * { box-sizing: border-box; }
+  body {
+    width: 1920px;
+    height: 1891px;
+    margin: 0;
+    overflow: hidden;
+    background: #f3efe7;
+    color: #17312c;
+    font-family: "Aptos", "Segoe UI", sans-serif;
+  }
+  .page {
+    position: relative;
+    width: 1920px;
+    height: 1891px;
+    background:
+      radial-gradient(circle at 14% 82%, rgba(242, 162, 77, .18), transparent 26%),
+      linear-gradient(180deg, #f8f2e7 0%, #f2eadc 100%);
+  }
+  .hero {
+    position: relative;
+    height: 955px;
+    overflow: hidden;
+    background: #203731;
+  }
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: saturate(.96) contrast(1.06);
+  }
+  .shade {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(90deg, rgba(7, 28, 25, 1) 0%, rgba(7, 28, 25, 1) 39%, rgba(12, 35, 32, .74) 58%, rgba(16, 41, 38, .12) 100%),
+      linear-gradient(180deg, rgba(11, 24, 24, .62) 0%, rgba(11, 24, 24, .08) 44%, rgba(11, 24, 24, .72) 100%);
+  }
+  .nav {
+    position: absolute;
+    top: 38px;
+    left: 260px;
+    right: 260px;
+    height: 76px;
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px 0 24px;
+    border-radius: 38px;
+    background: rgba(249, 244, 233, .94);
+    box-shadow: 0 18px 50px rgba(10, 25, 23, .18);
+  }
+  .logo { width: 139px; height: 72px; object-fit: contain; }
+  .nav-links {
+    display: flex;
+    gap: 42px;
+    align-items: center;
+    font-size: 15px;
+    font-weight: 800;
+    color: #17312c;
+  }
+  .nav-links span:first-child { color: #009c8f; }
+  .nav-cta {
+    padding: 16px 28px;
+    border-radius: 999px;
+    background: #ff5b2e;
+    color: #fff9ef;
+    font-size: 15px;
+    font-weight: 900;
+    box-shadow: 0 12px 24px rgba(158, 49, 19, .28);
+  }
+  .hero-copy {
+    position: absolute;
+    left: 172px;
+    top: 198px;
+    width: 720px;
+    color: #fff9ef;
+  }
+  .kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 14px;
+    border: 1px solid rgba(255, 249, 239, .42);
+    border-radius: 999px;
+    background: rgba(255, 249, 239, .12);
+    color: #f9d083;
+    font-size: 15px;
+    font-weight: 900;
+    letter-spacing: .02em;
+  }
+  h1 {
+    margin: 34px 0 24px;
+    font-family: "Georgia", "Times New Roman", serif;
+    font-size: 88px;
+    line-height: .96;
+    letter-spacing: 0;
+    font-weight: 700;
+    text-shadow: 0 8px 32px rgba(0,0,0,.24);
+  }
+  .lead {
+    width: 610px;
+    margin: 0;
+    font-size: 25px;
+    line-height: 1.42;
+    color: rgba(255, 249, 239, .9);
+  }
+  .actions {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    margin-top: 38px;
+  }
+  .primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 245px;
+    height: 70px;
+    border-radius: 999px;
+    background: #ff5b2e;
+    color: #fff9ef;
+    font-size: 22px;
+    font-weight: 900;
+    box-shadow: 0 20px 42px rgba(160, 50, 19, .38);
+  }
+  .secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 70px;
+    padding: 0 30px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 249, 239, .56);
+    color: #fff9ef;
+    font-size: 20px;
+    font-weight: 800;
+    background: rgba(255, 249, 239, .08);
+  }
+  .booking-strip {
+    position: absolute;
+    left: 172px;
+    right: 172px;
+    bottom: 48px;
+    min-height: 154px;
+    display: grid;
+    grid-template-columns: 1.15fr .9fr .9fr 1.05fr;
+    background: #fff8ec;
+    border-radius: 8px;
+    box-shadow: 0 26px 70px rgba(16, 31, 29, .28);
+    overflow: hidden;
+  }
+  .strip-item {
+    padding: 28px 32px;
+    border-right: 1px solid rgba(61, 45, 31, .14);
+  }
+  .strip-item:last-child { border-right: 0; }
+  .label {
+    display: block;
+    color: #8a5b32;
+    font-size: 14px;
+    font-weight: 900;
+    margin-bottom: 10px;
+  }
+  .value {
+    display: block;
+    color: #17312c;
+    font-size: 25px;
+    line-height: 1.14;
+    font-weight: 900;
+  }
+  .note {
+    display: block;
+    margin-top: 9px;
+    color: #725e48;
+    font-size: 15px;
+    line-height: 1.28;
+    font-weight: 650;
+  }
+  .trusted-mini {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+  }
+  .trusted-mini img {
+    width: 190px;
+    height: auto;
+    mix-blend-mode: multiply;
+  }
+  .curve {
+    position: absolute;
+    left: -2%;
+    right: -2%;
+    bottom: -1px;
+    height: 70px;
+    background: #f8f2e7;
+    clip-path: polygon(0 78%, 8% 70%, 18% 92%, 31% 74%, 45% 90%, 60% 70%, 74% 88%, 88% 70%, 100% 82%, 100% 100%, 0 100%);
+  }
+  .seasons {
+    position: relative;
+    height: 936px;
+    padding: 84px 164px 0;
+  }
+  .season-head {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: end;
+    gap: 32px;
+    margin-bottom: 48px;
+  }
+  .season-head h2 {
+    margin: 0;
+    font-family: "Georgia", "Times New Roman", serif;
+    font-size: 58px;
+    line-height: 1;
+    color: #17312c;
+  }
+  .season-head p {
+    margin: 15px 0 0;
+    color: #6f604f;
+    font-size: 22px;
+    line-height: 1.35;
+    width: 690px;
+  }
+  .now-pill {
+    display: flex;
+    gap: 18px;
+    align-items: center;
+    padding: 18px 24px;
+    border: 1px solid rgba(255, 91, 46, .28);
+    border-radius: 8px;
+    background: #fff8ec;
+    box-shadow: 0 12px 30px rgba(92, 58, 32, .09);
+  }
+  .now-pill strong {
+    color: #ff5b2e;
+    font-size: 22px;
+  }
+  .now-pill span {
+    color: #725e48;
+    font-size: 16px;
+    font-weight: 750;
+  }
+  .season-grid {
+    display: grid;
+    grid-template-columns: .92fr 1.16fr .92fr;
+    gap: 30px;
+    align-items: stretch;
+  }
+  .season-card {
+    position: relative;
+    min-height: 595px;
+    background: #fffaf1;
+    border: 1px solid rgba(80, 60, 42, .12);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 28px 70px rgba(69, 50, 34, .16);
+  }
+  .season-card.featured {
+    min-height: 655px;
+    margin-top: -28px;
+    border-color: rgba(255, 91, 46, .42);
+    box-shadow: 0 34px 86px rgba(92, 55, 29, .24);
+  }
+  .season-card img {
+    display: block;
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+  }
+  .season-card.featured img { height: 312px; }
+  .season-content { padding: 31px 34px 128px; }
+  .season-title {
+    margin: 0 0 13px;
+    color: #172d29;
+    font-size: 32px;
+    line-height: 1.05;
+    font-weight: 950;
+  }
+  .season-card.featured .season-title { font-size: 38px; }
+  .season-copy {
+    margin: 0;
+    min-height: 72px;
+    color: #5e564b;
+    font-size: 18px;
+    line-height: 1.35;
+    font-weight: 640;
+  }
+  .season-meta {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 18px;
+  }
+  .meta-box {
+    padding: 14px 15px;
+    border-radius: 6px;
+    background: #f4ecde;
+    color: #17312c;
+  }
+  .meta-box b {
+    display: block;
+    margin-bottom: 4px;
+    color: #8a5b32;
+    font-size: 12px;
+    font-weight: 900;
+  }
+  .meta-box span {
+    font-size: 17px;
+    font-weight: 900;
+  }
+  .season-button {
+    position: absolute;
+    left: 34px;
+    right: 34px;
+    bottom: 34px;
+    height: 62px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: #0f8f88;
+    color: #fff9ef;
+    font-size: 20px;
+    font-weight: 950;
+  }
+  .season-card:not(.featured) .season-button {
+    background: transparent;
+    color: #0f8f88;
+    border: 2px solid #0f8f88;
+  }
+  .flag {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 14px;
+    border-radius: 999px;
+    background: #ff5b2e;
+    color: #fff9ef;
+    font-size: 16px;
+    font-weight: 950;
+    box-shadow: 0 12px 28px rgba(103, 40, 19, .25);
+  }
+  .fine-print {
+    position: absolute;
+    display: none;
+    left: 164px;
+    right: 164px;
+    bottom: 36px;
+    display: flex;
+    justify-content: space-between;
+    color: #786855;
+    font-size: 16px;
+    font-weight: 700;
+  }
+</style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <img class="hero-bg" src="hero-bg.png" alt="">
+      <div class="shade"></div>
+      <nav class="nav">
+        <img class="logo" src="logo.png" alt="Popeye Village">
+        <div class="nav-links">
+          <span>Home</span><span>Explore</span><span>Things to do</span><span>News</span><span>Contact</span>
+        </div>
+        <div class="nav-cta">Book now</div>
+      </nav>
+      <div class="hero-copy">
+        <div class="kicker">Official film-set attraction in Malta</div>
+        <h1>Popeye Village Malta</h1>
+        <p class="lead">A real seaside movie set on Anchor Bay, with shows, village walks, swimming areas and family activities included in one visit.</p>
+        <div class="actions">
+          <div class="primary">Book official tickets</div>
+          <div class="secondary">Plan your visit</div>
+        </div>
+      </div>
+      <div class="booking-strip">
+        <div class="strip-item">
+          <span class="label">TODAY'S VISIT</span>
+          <span class="value">Open 09:30 to 18:00</span>
+          <span class="note">Online tickets help you skip the entrance queue.</span>
+        </div>
+        <div class="strip-item">
+          <span class="label">ONLINE PRICES</span>
+          <span class="value">Adults & teens €25</span>
+          <span class="note">Children 3-12 and pensioners €16.</span>
+        </div>
+        <div class="strip-item">
+          <span class="label">BOOKING CONFIDENCE</span>
+          <span class="value">Instant official entry</span>
+          <span class="note">Online tickets are non-refundable.</span>
+        </div>
+        <div class="strip-item trusted-mini">
+          <div>
+            <span class="label">TRUSTED BY VISITORS</span>
+            <span class="value">Tripadvisor excellence</span>
+            <span class="note">Quality Assured visitor attraction.</span>
+          </div>
+          <img src="trusted-badges.png" alt="">
+        </div>
+      </div>
+      <div class="curve"></div>
+    </section>
+    <section class="seasons">
+      <div class="season-head">
+        <div>
+          <h2>Choose the best time to visit</h2>
+          <p>Season cards are now planning tools: clear dates, opening times, and a direct route back to tickets.</p>
+        </div>
+        <div class="now-pill">
+          <div><strong>Now booking: Summer</strong><br><span>High Season starts 01 Jul</span></div>
+        </div>
+      </div>
+      <div class="season-grid">
+        <article class="season-card">
+          <img src="season-mid.png" alt="">
+          <div class="season-content">
+            <h3 class="season-title">Mid Season</h3>
+            <p class="season-copy">A calmer visit window with full village access and daytime activities.</p>
+            <div class="season-meta">
+              <div class="meta-box"><b>DATES</b><span>02 Jun - 30 Jun</span></div>
+              <div class="meta-box"><b>HOURS</b><span>09:30 - 17:30</span></div>
+            </div>
+          </div>
+          <div class="season-button">Discover more</div>
+        </article>
+        <article class="season-card featured">
+          <div class="flag">Best for first-time visitors</div>
+          <img src="season-summer.png" alt="">
+          <div class="season-content">
+            <h3 class="season-title">Summer High Season</h3>
+            <p class="season-copy">The full Anchor Bay experience: shows, seaside swimming areas, boat views and the liveliest village atmosphere.</p>
+            <div class="season-meta">
+              <div class="meta-box"><b>DATES</b><span>01 Jul - 30 Sep</span></div>
+              <div class="meta-box"><b>HOURS</b><span>09:30 - 18:00</span></div>
+            </div>
+          </div>
+          <div class="season-button">Book summer tickets</div>
+        </article>
+        <article class="season-card">
+          <img src="season-winter.png" alt="">
+          <div class="season-content">
+            <h3 class="season-title">Winter Low Season</h3>
+            <p class="season-copy">Quieter streets, scenic photos, shows and a softer pace for exploring the film set.</p>
+            <div class="season-meta">
+              <div class="meta-box"><b>DATES</b><span>Nov - May</span></div>
+              <div class="meta-box"><b>HOURS</b><span>Varies</span></div>
+            </div>
+          </div>
+          <div class="season-button">Discover more</div>
+        </article>
+      </div>
+      <div class="fine-print">
+        <span>Concept 01: Cinematic Mediterranean Trust</span>
+        <span>Hero uses trust, price and visit-planning cues above the fold.</span>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
