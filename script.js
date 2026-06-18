@@ -1,5 +1,17 @@
+/* ==========================================================================
+   1. DOM ELEMENTS
+   ========================================================================== */
+
+// --- global ---
 const header = document.querySelector('[data-js="site-header"]');
 const mobileNav = document.querySelector('[data-js="mobile-nav"]');
+
+// --- booking modal ---
+const bookingDialog = document.querySelector('[data-js="booking-dialog"]');
+const bookingButtons = document.querySelectorAll('[data-js="open-booking"]');
+const closeBookingButton = document.querySelector('[data-js="close-booking"]');
+
+// --- hero section ---
 const hero = document.querySelector('[data-js="hero"]');
 const heroBackgroundCurrent = document.querySelector('[data-js="hero-bg-current"]');
 const heroBackgroundNext = document.querySelector('[data-js="hero-bg-next"]');
@@ -10,32 +22,36 @@ const seasonStatus = document.querySelector('[data-js="season-status"]');
 const seasonPeriod = document.querySelector('[data-js="season-period"]');
 const currentPill = document.querySelector('[data-js="current-pill"]');
 const seasonButtons = [...document.querySelectorAll("[data-season]")];
-// const headerHours = document.querySelector(".header-time-hldr strong");
-const bookingDialog = document.querySelector('[data-js="booking-dialog"]');
-const bookingButtons = document.querySelectorAll('[data-js="open-booking"]');
-const closeBookingButton = document.querySelector('[data-js="close-booking"]');
+
+// --- events section ---
+const eventsHolder = document.querySelector('[data-js="events-holder"]');
+const featuredEvent = document.querySelector('[data-js="featured-event"]');
+const carousel = document.querySelector('.events-holder'); //carousel
 const eventCards = document.querySelectorAll("[data-event-name]"); // takes all event cards
 const eventDialog = document.querySelector('[data-js="event-dialog"]');
 const eventDialogTitle = document.querySelector('[data-js="event-dialog-title"]');
 const closeEventButton = document.querySelector('[data-js="close-event"]');
-const eventsHolder = document.querySelector('[data-js="events-holder"]');
-const featuredEvent = document.querySelector('[data-js="featured-event"]');
+
+// --- the map ---
 const mapWrapper = document.querySelector('[data-js="map-wrapper"]');
 const mapElement = document.querySelector('[data-js="map"]');
+const wrapper = document.querySelector('[data-js="map-wrapper"]');
+const map = document.querySelector('[data-js="map"]');
 const mapPointers = [...document.querySelectorAll(".map-pointer")];
+const panZones = document.querySelectorAll("[data-pan]");
+
+// --- map pins ---
 const pinInfo = document.querySelector('[data-js="pin-info"]');
 const pinLocation = document.querySelector('[data-js="pin-location"]');
 const pinTitle = document.querySelector('[data-js="pin-title"]');
 const pinDescription = document.querySelector('[data-js="pin-description"]');
 const closePinInfoButton = document.querySelector('[data-js="close-pin-info"]');
-const panZones = document.querySelectorAll("[data-pan]");
-const carousel = document.querySelector('.events-holder'); //carousel
+
+// --- Footer gallery ---
 const galleryImgs = document.querySelectorAll(".footer-gallery-img");
 const galleryDialog = document.querySelector('.gallery-dialog');
 const closeGallery = document.querySelector('[data-js="close-gallery"]');
 const dialogImage = document.querySelector('[data-js="dialog-image"]');
-const wrapper = document.querySelector('[data-js="map-wrapper"]');
-const map = document.querySelector('[data-js="map"]');
 
 const seasons = {
   low: {
@@ -64,9 +80,12 @@ const seasons = {
   },
 };
 
+// --- Hero Background Swap State ---
 let visibleBackground = heroBackgroundCurrent;
 let hiddenBackground = heroBackgroundNext;
 let backgroundSwapId = 0;
+
+// --- Map Drag & Pan State ---
 let mapX = 0;
 let mapY = 0;
 let dragStartX = 0;
@@ -78,6 +97,11 @@ let mapWasDragged = false;
 let panFrame = null;
 let panDirection = 0;
 
+
+
+/*
+ * Determines the current season (low, mid, high) based on a given date.
+ */
 function getCurrentSeason(date = new Date()) {
   const month = date.getMonth() + 1;
   const day = date.getDate();
@@ -93,14 +117,39 @@ function getCurrentSeason(date = new Date()) {
   return "low";
 }
 
+/**
+ * Retrieves the operational hours matching the current date and season rules.
+ */
 function getCurrentHours(date = new Date()) {
   const month = date.getMonth() + 1;
   return month === 5 && date.getDate() >= 30 ? "09:30 - 17:30" : seasons[getCurrentSeason(date)].hours;
 }
 
+// Calculate runtime global values
 const currentSeason = getCurrentSeason();
 const currentHours = getCurrentHours();
 
+/**
+ * Limits the rate at which a function execution can be triggered.
+ */
+function debounce(func, delay) {
+  let timeoutId;
+  return function (...args) {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => {
+      func.apply(this, args);
+    }, delay);
+  };
+}
+
+
+/* ==========================================================================
+   4. Hero section / seasons
+   ========================================================================== */
+
+/**
+ * Transitions the hero background image.
+ */
 function swapHeroBackground(source) {
   if (visibleBackground.getAttribute("src") === source) {
     return;
@@ -129,6 +178,9 @@ function swapHeroBackground(source) {
   }
 }
 
+/**
+ * Change hero content when a target season is chosen.
+ */
 function selectSeason(seasonKey, animateBackground = true) {
   const season = seasons[seasonKey];
   hero.dataset.season = seasonKey;
@@ -157,63 +209,21 @@ function selectSeason(seasonKey, animateBackground = true) {
   }
 }
 
-
-
+// --- Season Event Listeners ---
 seasonButtons.forEach((button) => {
   button.addEventListener("click", () => {
     selectSeason(button.dataset.season);
   });
 });
 
-bookingButtons.forEach((button) => {
-  button.addEventListener("click", () => {
-    bookingDialog.showModal();
-  });
-});
 
-closeBookingButton.addEventListener("click", () => {
-  bookingDialog.close();
-});
+/* ==========================================================================
+   5. Events
+   ========================================================================== */
 
-bookingDialog.addEventListener("click", (event) => {
-  const bounds = bookingDialog.getBoundingClientRect();
-  const clickedOutside =
-    event.clientX < bounds.left ||
-    event.clientX > bounds.right ||
-    event.clientY < bounds.top ||
-    event.clientY > bounds.bottom;
-
-  if (clickedOutside) {
-    bookingDialog.close();
-  }
-});
-
-eventCards.forEach((card) => {
-  card.addEventListener("click", () => {
-    eventDialogTitle.textContent = card.dataset.eventName;
-    eventDialog.showModal();
-  });
-}); // listen to every event card click
-
-closeEventButton.addEventListener("click", () => {
-  eventDialog.close();
-});
-
-eventDialog.addEventListener("click", (event) => {
-  const bounds = eventDialog.getBoundingClientRect();
-  const clickedOutside =
-    event.clientX < bounds.left ||
-    event.clientX > bounds.right ||
-    event.clientY < bounds.top ||
-    event.clientY > bounds.bottom;
-
-  if (clickedOutside) {
-    eventDialog.close();
-  }
-});
-
-
-
+/**
+ * Scrolls the event container horizontally to put focus on the featured card.
+ */
 function centerFeaturedEvent() {
   if (window.innerWidth > 900) {
     eventsHolder.scrollLeft = 0;
@@ -228,6 +238,39 @@ function centerFeaturedEvent() {
     (eventsHolder.clientWidth - featuredEvent.offsetWidth) / 2;
 }
 
+/**
+ * Automatically calculates and centers carousel content, locking overflow if items fit.
+ */
+function centerCarousel() {
+  const totalWidth = carousel.scrollWidth;
+  const visibleWidth = carousel.clientWidth;
+  
+  if (totalWidth <= visibleWidth) {
+    carousel.style.overflowX = 'hidden';
+    carousel.scrollLeft = 0;
+  } else {
+    carousel.style.overflowX = 'auto';
+    const centerPosition = (totalWidth - visibleWidth) / 2;
+    carousel.scrollLeft = centerPosition;
+  }
+}
+
+const optimizedResize = debounce(centerCarousel, 300);
+
+// --- Events & Carousel Listeners ---
+
+
+window.addEventListener('load', centerCarousel);
+window.addEventListener('resize', optimizedResize);
+
+
+/* ==========================================================================
+   6. Interactive map
+   ========================================================================== */
+
+/**
+ * Returns minimum/maximum X and Y coordinate boundaries allowed for map dragging.
+ */
 function getMapBounds() {
   return {
     minX: Math.min(0, mapWrapper.clientWidth - mapElement.offsetWidth),
@@ -237,6 +280,9 @@ function getMapBounds() {
   };
 }
 
+/**
+ * Constrains the current map values within limits and transforms CSS coordinates.
+ */
 function updateMapPosition() {
   const bounds = getMapBounds();
   mapX = Math.min(bounds.maxX, Math.max(bounds.minX, mapX));
@@ -245,6 +291,9 @@ function updateMapPosition() {
   mapElement.style.setProperty("--map-y", `${mapY}px`);
 }
 
+/**
+ * Centers the map dynamically based on a custom device viewport aspect-ratio.
+ */
 function setInitialMapPosition() {
   const focusRatio = window.innerWidth <= 900 ? 0.56 : 0.5;
   mapX = mapWrapper.clientWidth / 2 - mapElement.offsetWidth * focusRatio;
@@ -252,6 +301,9 @@ function setInitialMapPosition() {
   updateMapPosition();
 }
 
+/**
+ * Hides the informational pin drawer overlay with an animated state transition.
+ */
 function closePinInfo() {
   const activePin = document.querySelector(".map-pointer.is-active");
   activePin?.classList.remove("is-active");
@@ -271,6 +323,9 @@ function closePinInfo() {
   }, 190);
 }
 
+/**
+ * Checks constraints and adjusts layout horizontally to keep pins visible on mobile screen widths.
+ */
 function keepPinVisible(pin) {
   if (window.innerWidth > 900) {
     return;
@@ -290,6 +345,9 @@ function keepPinVisible(pin) {
   updateMapPosition();
 }
 
+/**
+ * Sets targeted datasets/text contents inside the info layout and toggles active classes.
+ */
 function openPinInfo(pin) {
   mapPointers.forEach((item) => item.classList.toggle("is-active", item === pin));
 
@@ -306,6 +364,34 @@ function openPinInfo(pin) {
   keepPinVisible(pin);
 }
 
+/**
+ * Continuously increments coordinates to smoothly slide the map if an edge pan zone is triggered.
+ */
+function runEdgePan() {
+  if (!panDirection || activePointerId !== null) {
+    panFrame = null;
+    return;
+  }
+
+  mapX += panDirection * 6;
+  updateMapPosition();
+  panFrame = requestAnimationFrame(runEdgePan);
+}
+
+/**
+ * Finalizes drag movements, stops capturing the pointer tracking system and unsets active states.
+ */
+function finishMapDrag(event) {
+  if (event.pointerId !== activePointerId) {
+    return;
+  }
+
+  mapWrapper.releasePointerCapture(event.pointerId);
+  mapWrapper.classList.remove("is-dragging");
+  activePointerId = null;
+}
+
+// --- Map Event Listeners ---
 mapWrapper.addEventListener("pointerdown", (event) => {
   if (event.target.closest(".map-pointer, .map-abs")) {
     return;
@@ -334,16 +420,6 @@ mapWrapper.addEventListener("pointermove", (event) => {
   updateMapPosition();
 });
 
-function finishMapDrag(event) {
-  if (event.pointerId !== activePointerId) {
-    return;
-  }
-
-  mapWrapper.releasePointerCapture(event.pointerId);
-  mapWrapper.classList.remove("is-dragging");
-  activePointerId = null;
-}
-
 mapWrapper.addEventListener("pointerup", finishMapDrag);
 mapWrapper.addEventListener("pointercancel", finishMapDrag);
 
@@ -361,17 +437,6 @@ mapPointers.forEach((pin) => {
 
 closePinInfoButton.addEventListener("click", closePinInfo);
 
-function runEdgePan() {
-  if (!panDirection || activePointerId !== null) {
-    panFrame = null;
-    return;
-  }
-
-  mapX += panDirection * 6;
-  updateMapPosition();
-  panFrame = requestAnimationFrame(runEdgePan);
-}
-
 panZones.forEach((zone) => {
   zone.addEventListener("pointerenter", () => {
     panDirection = Number(zone.dataset.pan);
@@ -385,101 +450,21 @@ panZones.forEach((zone) => {
   });
 });
 
+window.addEventListener('load', setInitialMapPosition);
+window.addEventListener('resize', debounce(setInitialMapPosition, 300));
 
 
 
-function initMapPosition() {
-  // 1. Get the actual rendered widths
-  const wrapperWidth = wrapper.offsetWidth;
-  const mapWidth = map.offsetWidth;
+/* ==========================================================================
+   MODAL UTILITIES (DRY CONFIGURATION)
+   ========================================================================== */
 
-  // 2. Calculate how many pixels the map overflows, and divide by 2
-  // This will be a negative number (e.g., -400px), shifting the map left perfectly
-  const centerX = (wrapperWidth - mapWidth) / 2;
-
-  // 3. Apply it to your CSS variable
-  map.style.setProperty('--map-x', `${centerX}px`);
-
-  // 4. IMPORTANT FOR YOUR DRAG SCRIPT:
-  // Your dragging script likely has a variable tracking the current X position 
-  // (e.g., currentX, mapX, posX). You MUST update that variable with this starting value.
-  // Example: 
-  // myMapTracker.x = centerX;
-}
-
-// Run it once the DOM and assets are fully loaded so dimensions are accurate
-window.addEventListener('load', initMapPosition);
-
-//Map section ^
-
-
-// headerHours.textContent = currentHours;
-// selectSeason(currentSeason, false);
-// requestAnimationFrame(centerFeaturedEvent);
-// requestAnimationFrame(setInitialMapPosition);
-
-
-
-// Carousel
-
-
-function centerCarousel() {
-  const totalWidth = carousel.scrollWidth;
-  const visibleWidth = carousel.clientWidth;
-  
-  // 1. Check if the content actually overflows the screen
-  if (totalWidth <= visibleWidth) {
-    // If it fits completely, lock scrolling entirely
-    carousel.style.overflowX = 'hidden';
-    carousel.scrollLeft = 0; // Reset scroll to default
-  } else {
-    // If it overflows, enable scrolling and calculate the center
-    carousel.style.overflowX = 'auto';
-    
-    const centerPosition = (totalWidth - visibleWidth) / 2;
-    carousel.scrollLeft = centerPosition;
-  }
-}
-
-// The same debounce wrapper from before to protect performance
-function debounce(func, delay) {
-  let timeoutId;
-  return function (...args) {
-    clearTimeout(timeoutId);
-    timeoutId = setTimeout(() => {
-      func.apply(this, args);
-    }, delay);
-  };
-}
-
-const optimizedResize = debounce(centerCarousel, 300);
-
-window.addEventListener('load', centerCarousel);
-window.addEventListener('resize', optimizedResize);
-
-
-
-// gallery image pop-up
-
-// const galleryImgs = document.querySelectorAll(".footer-gallery-img");
-// const galleryDialog = document.querySelector('.gallery-dialog');
-
-
-galleryImgs.forEach((card) => {
-  card.addEventListener("click", () => {
-    const clickedImgElement = card.querySelector("img");
-    dialogImage.src = clickedImgElement.src;
-    dialogImage.alt = clickedImgElement.alt;
-    galleryDialog.showModal();
-  });
-}); // listen to every event card click
-
-closeGallery.addEventListener("click", () => {
-  galleryDialog.close();
-});
-
-galleryDialog.addEventListener("click", (event) => {
-  const bounds = galleryDialog.getBoundingClientRect();
+/**
+ * Attaches generic overlay click tracking to close a dialog when its backdrop is clicked.
+ */
+function handleBackdropClick(event) {
+  const dialog = event.currentTarget;
+  const bounds = dialog.getBoundingClientRect();
   const clickedOutside =
     event.clientX < bounds.left ||
     event.clientX > bounds.right ||
@@ -487,6 +472,50 @@ galleryDialog.addEventListener("click", (event) => {
     event.clientY > bounds.bottom;
 
   if (clickedOutside) {
-    galleryDialog.close();
+    dialog.close();
   }
+}
+
+/**
+ * Centralized setup helper to attach close actions and backdrop handlers to a dialog.
+ */
+function setupDialog(dialogElement, closeButtonElement) {
+  if (!dialogElement) return;
+
+  if (closeButtonElement) {
+    closeButtonElement.addEventListener("click", () => dialogElement.close());
+  }
+
+  dialogElement.addEventListener("click", handleBackdropClick);
+}
+
+
+/* ==========================================================================
+   MODAL INITIALIZATION & EVENT LISTENERS
+   ========================================================================== */
+
+// 1. Booking Modal Setup
+bookingButtons.forEach((button) => {
+  button.addEventListener("click", () => bookingDialog.showModal());
 });
+setupDialog(bookingDialog, closeBookingButton);
+
+// 2. Event Modal Setup
+eventCards.forEach((card) => {
+  card.addEventListener("click", () => {
+    eventDialogTitle.textContent = card.dataset.eventName;
+    eventDialog.showModal();
+  });
+});
+setupDialog(eventDialog, closeEventButton);
+
+// 3. Gallery Modal Setup
+galleryImgs.forEach((card) => {
+  card.addEventListener("click", () => {
+    const clickedImgElement = card.querySelector("img");
+    dialogImage.src = clickedImgElement.src;
+    dialogImage.alt = clickedImgElement.alt;
+    galleryDialog.showModal();
+  });
+});
+setupDialog(galleryDialog, closeGallery);

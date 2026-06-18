@@ -2001,6 +2001,9 @@ font-size: 12px;
   }
 }
 @media (max-width: 1000px){
+  :root{
+    --Hdr-p: 8px;
+  }
   .site-header {
     width: calc(100% - 24px);
     /* max-width: 360px; */
@@ -2242,7 +2245,6 @@ font-size: 12px;
   --h5: 14px;
   --h6: 12px;
   --block-radius: 20px;
-  --Hdr-p: 8px;
   }
   
   
@@ -2540,4 +2542,12 @@ font-size: 12px;
   .events-holder {
     scroll-behavior: auto;
   }
+}
+.gallery-dialog{
+  padding: 0;
+}
+.dialog-img{
+  display: block;
+  max-width: 100%;
+  height: auto;
 }
