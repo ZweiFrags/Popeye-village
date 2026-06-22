@@ -2,6 +2,8 @@
    1. DOM ELEMENTS
    ========================================================================== */
 
+document.documentElement.classList.add("js-enabled");
+
 // --- global ---
 const header = document.querySelector('[data-js="site-header"]');
 const mobileNav = document.querySelector('[data-js="mobile-nav"]');
@@ -53,10 +55,22 @@ const galleryDialog = document.querySelector('.gallery-dialog');
 const closeGallery = document.querySelector('[data-js="close-gallery"]');
 const dialogImage = document.querySelector('[data-js="dialog-image"]');
 
+// --- scroll animation targets ---
+const heroRevealItems = document.querySelectorAll(
+  ".promo-text-hldr, .info-text-hldr, .hero-section .section-content > .button, .tags-hldr"
+);
+const scrollRevealTargets = [
+  { element: document.querySelector(".events-section"), threshold: 0.2 },
+  { element: document.querySelector(".map-section"), threshold: 0.18 },
+  { element: document.querySelector(".news-section"), threshold: 0.16 },
+  { element: document.querySelector(".footer-content"), threshold: 0.22 },
+  { element: document.querySelector(".footer-gallery"), threshold: 0.2 },
+];
+
 const seasons = {
   low: {
     title: "Low season",
-    image: "assets/bg-img-winter.png",
+    image: "assets/bg-img-winter.webp",
     description:
       "Enjoy a quieter visit to the original Popeye's Film Set, with village activities, live entertainment, scenic walks, and family attractions included throughout the day.",
     hours: "09:30 - 17:00",
@@ -64,7 +78,7 @@ const seasons = {
   },
   high: {
     title: "High season",
-    image: "assets/bg-img-summer.png",
+    image: "assets/bg-img-summer.webp",
     description:
       "Enjoy full access to the original Popeye's Film Set, which features live animation shows, traditional games, and a 15-minute documentary screening. Dive into the fun of our various kids' play pools and water assault courses, and enjoy our 9-hole mini-golf course, sunbeds, and umbrellas.",
     hours: "09:30 - 18:00",
@@ -72,7 +86,7 @@ const seasons = {
   },
   mid: {
     title: "Mid season",
-    image: "assets/bg-img-autumn-spring.png",
+    image: "assets/bg-img-autumn-spring.webp",
     description:
       "Explore the original film set with live entertainment, traditional games, village activities, and family attractions during the milder spring and autumn season.",
     hours: "09:30 - 17:30",
@@ -454,6 +468,76 @@ window.addEventListener('load', setInitialMapPosition);
 window.addEventListener('resize', debounce(setInitialMapPosition, 300));
 
 
+/* ==========================================================================
+   7. Scroll animations
+   ========================================================================== */
+
+function getCssPercentValue(element, propertyName) {
+  return parseFloat(element.style.getPropertyValue(propertyName)) || 0;
+}
+
+function prepareScrollAnimations() {
+  heroRevealItems.forEach((item, index) => {
+    item.style.setProperty("--reveal-delay", `${index * 110}ms`);
+  });
+
+  requestAnimationFrame(() => {
+    hero?.classList.add("hero-loaded");
+  });
+
+  mapPointers.forEach((pin, index) => {
+    const y = getCssPercentValue(pin, "--y");
+    const regionDelay = y < 45 ? 0 : y < 60 ? 180 : 360;
+    pin.style.setProperty("--pin-delay", `${regionDelay + (index % 10) * 36}ms`);
+  });
+
+  document.querySelectorAll(".event-card").forEach((card, index) => {
+    card.style.setProperty("--card-delay", `${250 + index * 150}ms`);
+  });
+
+  document.querySelectorAll(".news-item").forEach((card, index) => {
+    card.style.setProperty("--news-delay", `${index * 110}ms`);
+  });
+
+  document.querySelectorAll(".footer-gallery-img").forEach((item, index) => {
+    item.style.setProperty("--gallery-delay", `${index * 100}ms`);
+  });
+}
+
+function initializeScrollAnimations() {
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    document.documentElement.classList.add("reduced-motion");
+    return;
+  }
+
+  prepareScrollAnimations();
+
+  const observer = new IntersectionObserver((entries, activeObserver) => {
+    entries.forEach((entry) => {
+      if (!entry.isIntersecting) {
+        entry.target.classList.remove("is-in-view");
+        return;
+      }
+
+      entry.target.classList.add("is-in-view");
+      // activeObserver.unobserve(entry.target);
+    });
+  }, {
+    root: null,
+    rootMargin: "0px 0px -10% 0px",
+    threshold: [0.16, 0.2, 0.22],
+  });
+
+  scrollRevealTargets.forEach(({ element }) => {
+    if (element) {
+      observer.observe(element);
+    }
+  });
+}
+
+initializeScrollAnimations();
+
+
 
 /* ==========================================================================
    MODAL UTILITIES (DRY CONFIGURATION)
@@ -512,6 +596,10 @@ setupDialog(eventDialog, closeEventButton);
 // 3. Gallery Modal Setup
 galleryImgs.forEach((card) => {
   card.addEventListener("click", () => {
+    if (!galleryDialog || !dialogImage) {
+      return;
+    }
+
     const clickedImgElement = card.querySelector("img");
     dialogImage.src = clickedImgElement.src;
     dialogImage.alt = clickedImgElement.alt;
