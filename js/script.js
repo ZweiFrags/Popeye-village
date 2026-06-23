@@ -480,7 +480,7 @@ window.addEventListener('resize', debounce(setInitialMapPosition, 300));
 //-------------------- map smooth pan
     // Physics constants (tweak these for different feel)
     const FRICTION = 0.2;      // Lower = stops faster, Higher = more "slippery"
-    const SPRING_STIFF = .5;   // Force of the "pull" toward the mouse target
+    const SPRING_STIFF = .3;   // Force of the "pull" toward the mouse target
 
     let containerWidth = 0;
     let imageWidth = 0;
