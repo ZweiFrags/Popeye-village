@@ -37,7 +37,6 @@ const closeEventButton = document.querySelector('[data-js="close-event"]');
 // --- the map ---
 const mapWrapper = document.querySelector('[data-js="map-wrapper"]');
 const mapElement = document.querySelector('[data-js="map"]');
-const wrapper = document.querySelector('[data-js="map-wrapper"]');
 const map = document.querySelector('[data-js="map"]');
 const mapPointers = [...document.querySelectorAll(".map-pointer")];
 const panZones = document.querySelectorAll("[data-pan]");
@@ -389,65 +388,65 @@ function openPinInfo(pin) {
   keepPinVisible(pin);
 }
 
-/**
- * Continuously increments coordinates to smoothly slide the map if an edge pan zone is triggered.
- */
-function runEdgePan() {
-  if (!panDirection || activePointerId !== null) {
-    panFrame = null;
-    return;
-  }
+// /**
+//  * Continuously increments coordinates to smoothly slide the map if an edge pan zone is triggered.
+//  */
+// function runEdgePan() {
+//   if (!panDirection || activePointerId !== null) {
+//     panFrame = null;
+//     return;
+//   }
 
-  mapX += panDirection * 6;
-  updateMapPosition();
-  panFrame = requestAnimationFrame(runEdgePan);
-}
+//   mapX += panDirection * 6;
+//   updateMapPosition();
+//   panFrame = requestAnimationFrame(runEdgePan);
+// }
 
-/**
- * Finalizes drag movements, stops capturing the pointer tracking system and unsets active states.
- */
-function finishMapDrag(event) {
-  if (event.pointerId !== activePointerId) {
-    return;
-  }
+// /**
+//  * Finalizes drag movements, stops capturing the pointer tracking system and unsets active states.
+//  */
+// function finishMapDrag(event) {
+//   if (event.pointerId !== activePointerId) {
+//     return;
+//   }
 
-  mapWrapper.releasePointerCapture(event.pointerId);
-  mapWrapper.classList.remove("is-dragging");
-  activePointerId = null;
-}
+//   mapWrapper.releasePointerCapture(event.pointerId);
+//   mapWrapper.classList.remove("is-dragging");
+//   activePointerId = null;
+// }
 
-// --- Map Event Listeners ---
-if(mapWrapper){
-mapWrapper.addEventListener("pointerdown", (event) => {
-  if (event.target.closest(".map-pointer, .map-abs")) {
-    return;
-  }
+// // --- Map Event Listeners ---
+// if(mapWrapper){
+// mapWrapper.addEventListener("pointerdown", (event) => {
+//   if (event.target.closest(".map-pointer, .map-abs")) {
+//     return;
+//   }
 
-  activePointerId = event.pointerId;
-  dragStartX = event.clientX;
-  dragStartY = event.clientY;
-  mapStartX = mapX;
-  mapStartY = mapY;
-  mapWasDragged = false;
-  mapWrapper.classList.add("is-dragging");
-  mapWrapper.setPointerCapture(event.pointerId);
-});
+//   activePointerId = event.pointerId;
+//   dragStartX = event.clientX;
+//   dragStartY = event.clientY;
+//   mapStartX = mapX;
+//   mapStartY = mapY;
+//   mapWasDragged = false;
+//   mapWrapper.classList.add("is-dragging");
+//   mapWrapper.setPointerCapture(event.pointerId);
+// });
 
-mapWrapper.addEventListener("pointermove", (event) => {
-  if (event.pointerId !== activePointerId) {
-    return;
-  }
+// mapWrapper.addEventListener("pointermove", (event) => {
+//   if (event.pointerId !== activePointerId) {
+//     return;
+//   }
 
-  const deltaX = event.clientX - dragStartX;
-  const deltaY = event.clientY - dragStartY;
-  mapWasDragged = mapWasDragged || Math.abs(deltaX) > 4 || Math.abs(deltaY) > 4;
-  mapX = mapStartX + deltaX;
-  mapY = mapStartY + deltaY;
-  updateMapPosition();
-});
+//   const deltaX = event.clientX - dragStartX;
+//   const deltaY = event.clientY - dragStartY;
+//   mapWasDragged = mapWasDragged || Math.abs(deltaX) > 4 || Math.abs(deltaY) > 4;
+//   mapX = mapStartX + deltaX;
+//   mapY = mapStartY + deltaY;
+//   updateMapPosition();
+// });
 
-mapWrapper.addEventListener("pointerup", finishMapDrag);
-mapWrapper.addEventListener("pointercancel", finishMapDrag);
+// mapWrapper.addEventListener("pointerup", finishMapDrag);
+// mapWrapper.addEventListener("pointercancel", finishMapDrag);
 
 mapPointers.forEach((pin) => {
   pin.addEventListener("click", (event) => {
@@ -466,9 +465,9 @@ closePinInfoButton.addEventListener("click", closePinInfo);
 panZones.forEach((zone) => {
   zone.addEventListener("pointerenter", () => {
     panDirection = Number(zone.dataset.pan);
-    if (!panFrame && activePointerId === null) {
-      panFrame = requestAnimationFrame(runEdgePan);
-    }
+    // if (!panFrame && activePointerId === null) {
+    //   panFrame = requestAnimationFrame(runEdgePan);
+    // }
   });
 
   zone.addEventListener("pointerleave", () => {
@@ -478,8 +477,82 @@ panZones.forEach((zone) => {
 
 window.addEventListener('load', setInitialMapPosition);
 window.addEventListener('resize', debounce(setInitialMapPosition, 300));
-}
+//-------------------- map smooth pan
+    // Physics constants (tweak these for different feel)
+    const FRICTION = 0.2;      // Lower = stops faster, Higher = more "slippery"
+    const SPRING_STIFF = .5;   // Force of the "pull" toward the mouse target
 
+    let containerWidth = 0;
+    let imageWidth = 0;
+    let maxScroll = 0;
+
+    let mouseX = 0;             // Current mouse position in pixels
+    let targetX = 0;            // Where the image "should" be based on mouse
+    let currentX = 0;           // Where the image actually is right now
+    let velX = 0;               // Current horizontal velocity
+
+    // Initialize dimensions
+    const updateSize = () => {
+        containerWidth = mapWrapper.offsetWidth;
+        imageWidth = mapElement.offsetWidth;  
+        // if(containerWidth < 1400){
+        //   imageWidth = mapElement.offsetWidth - 400;
+        // }else{
+        //   imageWidth = mapElement.offsetWidth;
+        // }
+          maxScroll = imageWidth - containerWidth;
+    };
+
+    // Update target based on mouse position
+    mapWrapper.addEventListener('pointermove', (e) => {
+        const rect = mapWrapper.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        
+        // Map mouse position (0 to containerWidth) to image offset (0 to -maxScroll)
+        // This ensures the image edges align with the container edges
+        const percentage = x / containerWidth;
+        targetX = -(percentage * maxScroll);
+    });
+
+    // The Animation Loop
+    function animate() {
+        // 1. Calculate the "Spring" force (distance to target)
+        const force = (targetX - currentX) * SPRING_STIFF;
+        
+        // 2. Update velocity and apply friction (Momentum)
+        velX += force;
+        velX *= FRICTION;
+        
+        // 3. Update position
+        currentX += velX;
+
+        // 4. Elastic Boundary Logic
+        // If currentX is beyond the left (0) or right (-maxScroll) bounds,
+        // we add a strong restorative force to pull it back.
+        if (currentX > 0) {
+            currentX += (0 - currentX) * 0.2; // Snap back to 0
+        } else if (currentX < -maxScroll) {
+            currentX += (-maxScroll - currentX) * 0.2; // Snap back to limit
+        }
+
+        // Apply to DOM
+        mapElement.style.transform = `translateX(${currentX}px)`;
+
+        requestAnimationFrame(animate);
+    }
+
+    // Handle image load (to get width) and window resize
+    // mapElement.onload = () => {
+        updateSize();
+        // console.log('imageWidth= ' + imageWidth)
+        // Set initial position to center
+        targetX = -maxScroll / 2;
+        currentX = targetX;
+        animate();
+    // };
+
+    window.addEventListener('resize', updateSize);
+//-------------------- map smooth pan end
 /* ==========================================================================
    7. Scroll animations
    ========================================================================== */
@@ -695,8 +768,7 @@ if (blazeTrack) {
       imgDialog .showModal();
     }
   });
-}
-setupDialog(imgDialog , closeGallery);
+  setupDialog(imgDialog , closeGallery);
 
 // Next Button Click
 nextImgBtn.addEventListener("click", () => {
@@ -711,3 +783,5 @@ prevImgBtn.addEventListener("click", () => {
   currentImgIndex = (currentImgIndex - 1 + imagesData.length) % imagesData.length;
   updateModalImage(currentImgIndex, imagesData);
 });
+}
+

@@ -1176,15 +1176,20 @@ font-size: 12px;
 
 .map {
   position: absolute;
-  top: 0;
+  /* top: 0; */
+  top: -10%;
   left: 0;
   aspect-ratio: 12 / 5;
-  height: 120vh;
+  /* height: 120vh; */
+    height: 120%;
   transform: translate3d(var(--map-x, 0px), var(--map-y, 0px), 0);
   /* transform: translate3d(calc(-50% + var(--map-x, 0px)), calc(-50% + var(--map-y, 0px)), 0); */
   will-change: transform;
 }
-
+.map-align {aspect-ratio: 12/5; position: absolute;
+  left: 50%; transform: translateX(-50%);
+  height: 100%;
+}
 .map-bg {
   position: absolute;
   inset: 0;
@@ -2118,11 +2123,11 @@ font-size: 12px;
 
 .js-enabled .event-card {
   opacity: 0;
-  transform: translateY(44px);
+  transform: translateY(72px);
 }
 
 .js-enabled .events-section.is-in-view .event-card {
-  animation: card-rise-in 720ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: card-rise-in 680ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
   animation-delay: var(--card-delay, 0ms);
 }
 
@@ -2324,7 +2329,9 @@ font-size: 12px;
   }
 }
 
-
+@media (max-width: 1500px){
+  .map { aspect-ratio: 9 / 5;}
+}
 
 @media (max-width: 1100px){
   .-pin-info {
