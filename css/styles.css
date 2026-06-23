@@ -1,13 +1,13 @@
 :root {
   font-synthesis: none;
 
-  --icon-clock: url("assets/icon/clock-icon.svg");
-  --icon-sun: url("assets/icon/season-high.svg");
-  --icon-cloudy: url("assets/icon/season-mid.svg");
-  --icon-sunset: url("assets/icon/season-low.svg");
-  --icon-close: url("assets/icon/cross.svg");
-  --icon-menu: url(assets/icon/menu-icon.svg);
-  --icon-location: url(assets/icon/location-icon.svg);
+  --icon-clock: url("../assets/icon/clock-icon.svg");
+  --icon-sun: url("../assets/icon/season-high.svg");
+  --icon-cloudy: url("../assets/icon/season-mid.svg");
+  --icon-sunset: url("../assets/icon/season-low.svg");
+  --icon-close: url("../assets/icon/cross.svg");
+  --icon-menu: url("../assets/icon/menu-icon.svg");
+  --icon-location: url("../assets/icon/location-icon.svg");
 
   --h1: 48px;
   --h2: 32px;
@@ -26,7 +26,7 @@
   --color-accent-dark: #005cb8;
   --header-radius: 40px;
   --content-max-width: 1200px;
-  --block-radius: 40px;
+  --block-radius: 20px;
 
   --Hdr-h: 124px;
   --Hdr-p: 16px;
@@ -87,7 +87,7 @@ dialog{
 
 @font-face {
   font-family: "Montserrat";
-  src: url("assets/montserrat-400.ttf") format("truetype");
+  src: url("../assets/montserrat-400.ttf") format("truetype");
   font-style: normal;
   font-weight: 400;
   font-display: swap;
@@ -95,7 +95,7 @@ dialog{
 
 @font-face {
   font-family: "Montserrat";
-  src: url("assets/montserrat-500.ttf") format("truetype");
+  src: url("../assets/montserrat-500.ttf") format("truetype");
   font-style: normal;
   font-weight: 500;
   font-display: swap;
@@ -103,7 +103,7 @@ dialog{
 
 @font-face {
   font-family: "Montserrat";
-  src: url("assets/montserrat-600.ttf") format("truetype");
+  src: url("../assets/montserrat-600.ttf") format("truetype");
   font-style: normal;
   font-weight: 600;
   font-display: swap;
@@ -124,7 +124,7 @@ html {
 body {
   min-height: 100vh;
   margin: 0;
-  background: #f5f7fd;
+  background: var(--color-grayish);
   color: var(--color-text);
   font-family: "Montserrat", "Segoe UI", sans-serif;
   font-size: var(--p);
@@ -571,18 +571,23 @@ font-size: 12px;
 .mobile-nav {
   display: none;
 }
-
-.hero-section {
+.section{
   position: relative;
   display: flex;
+  justify-content: center;
+  width: 100%;
+  overflow: hidden;
+  background: var(--color-grayish);
+  padding-left: 16px;
+  padding-right: 16px;
+}
+.hero-section {
   align-items: flex-end;
   justify-content: center;
   width: 100%;
   height: 100svh;
   min-height: 700px;
-  padding: 0 16px 200px;
-  overflow: hidden;
-  background: var(--color-white);
+  padding-bottom: 200px;
   color: var(--color-white);
 }
 
@@ -642,6 +647,20 @@ font-size: 12px;
   min-width: 0;
 }
 
+
+.info-text-hldr.animate-in .info-header,
+.info-text-hldr.animate-in .seasons-text {
+  animation: slideInFromLeft 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+.info-text-hldr .info-header {
+  --delay: 1;
+}
+.info-text-hldr .seasons-text {
+  --delay: 2;
+}
+.info-text-hldr.animate-in * {
+  animation-delay: calc(var(--delay) * 0.08s);
+}
 .promo-text-hldr,
 .info-text-hldr {
   display: flex;
@@ -825,15 +844,15 @@ font-size: 12px;
 }
 
 .season-icon-low {
-  mask-image: url("assets/season-low.svg");
+  mask-image: url("../assets/season-low.svg");
 }
 
 .season-icon-high {
-  mask-image: url("assets/season-high.svg");
+  mask-image: url("../assets/season-high.svg");
 }
 
 .season-icon-mid {
-  mask-image: url("assets/season-mid.svg");
+  mask-image: url("../assets/season-mid.svg");
 }
 
 .s-txt-hldr {
@@ -881,13 +900,8 @@ font-size: 12px;
 }
 
 .events-section {
-  position: relative;
-  display: flex;
   justify-content: center;
-  width: 100%;
-  padding: 60px 16px 0px;
-  overflow: hidden;
-  background: #f5f7fd;
+  padding-top: 60px;
 }
 
 .events-section-content {
@@ -1118,9 +1132,8 @@ font-size: 12px;
   display: flex;
   isolation: isolate;
   width: 100%;
-  /* height: 1535px; */
   overflow: hidden;
-  background: #eaf7f9;
+  background: var(--color-grayish);
 }
 
 .clouds-transition {
@@ -1132,7 +1145,7 @@ font-size: 12px;
   height: 30vh;
   /* min-height: 320px;
   max-height: 420px; */
-  background-image: url("assets/clouds-transition.webp");
+  background-image: url("../assets/clouds-transition.webp");
   background-position: 50% 100%;
   background-repeat: repeat-x;
   background-size: auto 100%;
@@ -1551,8 +1564,8 @@ font-size: 12px;
 }
 
 .news-section {
-  padding: 40px 16px 100px;
-  background: #f5f7fd;
+  padding-top: 40px;
+  padding-bottom: 100px;
 }
 
 .news-section-content {
@@ -1685,12 +1698,9 @@ font-size: 12px;
 }
 
 .site-footer {
-  display: flex;
   flex-direction: column;
   gap: 48px;
-  padding: 16px 16px 60px;
-  overflow: hidden;
-  background: #f5f7fd;
+  padding-bottom: 60px;
 }
 
 .footer-content,
@@ -1821,15 +1831,15 @@ font-size: 12px;
 }
 
 .footer-contact-icon.location {
-  --footer-contact-icon: url("assets/icon/footer-location.svg");
+  --footer-contact-icon: url("../assets/icon/footer-location.svg");
 }
 
 .footer-contact-icon.email {
-  --footer-contact-icon: url("assets/icon/footer-email.svg");
+  --footer-contact-icon: url("../assets/icon/footer-email.svg");
 }
 
 .footer-contact-icon.phone {
-  --footer-contact-icon: url("assets/icon/footer-phone.svg");
+  --footer-contact-icon: url("../assets/icon/footer-phone.svg");
 }
 
 .email-hldr {
@@ -1978,6 +1988,72 @@ font-size: 12px;
 
 .footer-gallery-img:hover img,
 .footer-gallery-img:focus-within img {
+  transform: scale(1.1);
+}
+
+/* Wedding page */
+
+.wedding-gallery{
+  
+}
+
+/* Gallery section */
+.gallery-introduction{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  padding: 24px;
+  border-radius: 20px;
+  background: var(--color-white);
+  grid-auto-rows: max-content;
+  align-items: stretch;
+}
+.introduction-img{
+  width: 100%;
+  /* height: 0;
+  min-height: 100%; */
+  height: 100%;
+  object-fit: cover; 
+  border-radius: 10px;
+}
+.gallery-content{
+
+}
+.gallery-description{
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+}
+.gallery-section{
+  padding-bottom: 60px;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+.gallery-content {
+  position: relative;
+  width: 100%;
+  height: 400px; /* Adjust height to match your layout */
+  overflow: hidden;
+  border-radius: 10px;
+}
+
+.gallery-item{
+  height: 240px;
+  background: white;
+  border-radius: var(--block-radius);
+  overflow: hidden;
+}
+.gallery-img{
+  width: 100%;
+  height: 100%;
+  transition: transform 420ms ease;
+  object-fit: cover;
+}
+.gallery-item:hover img,
+.gallery-item:focus-within img {
   transform: scale(1.1);
 }
 
@@ -2166,6 +2242,17 @@ font-size: 12px;
   }
 }
 
+@keyframes slideInFromLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
 @keyframes title-slide-in {
   to {
     opacity: 1;
@@ -2296,6 +2383,7 @@ font-size: 12px;
   .Menu{
     --op: 0; 
     --vis: hidden;
+    position: absolute;
   }
 
   .button-book {
@@ -2358,9 +2446,6 @@ font-size: 12px;
 
   .mobile-nav a {
   width: 100%;
-  }
-  .events-section {
-  padding: 60px 12px 0px;
   }
 
   .events-section-content {
@@ -2503,11 +2588,13 @@ font-size: 12px;
   --block-radius: 20px;
   }
   
-  
+  .section{
+    padding-left: 12px;
+    padding-right: 12px;
+  }
 
   .hero-section {
     min-height: 660px;
-    padding: 0 12px 200px;
   }
 
   .hero-bg-img {
@@ -2594,9 +2681,6 @@ font-size: 12px;
 
 
 
-  .map-section {
-    /* height: 1535px; */
-  }
 
   .clouds-transition {
     height: 42vh;
@@ -2627,7 +2711,8 @@ font-size: 12px;
   }
 
   .news-section {
-    padding: 60px 12px;
+    padding-top: 60px;
+    padding-bottom: 60px;
   }
 
   .news-header {
@@ -2642,7 +2727,6 @@ font-size: 12px;
 
   .site-footer {
     gap: 32px;
-    padding: 12px 12px 0;
   }
 
   .footer-content {
@@ -2682,6 +2766,12 @@ font-size: 12px;
     flex: 0 0 min(48vw, 220px);
     height: 142px;
     scroll-snap-align: start;
+  }
+
+  .gallery-introduction{
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
   }
 }
 

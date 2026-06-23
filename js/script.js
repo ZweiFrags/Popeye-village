@@ -199,6 +199,10 @@ function selectSeason(seasonKey, animateBackground = true) {
   const season = seasons[seasonKey];
   hero.dataset.season = seasonKey;
 
+  const contentHolder = document.querySelector(".info-text-hldr"); //new
+  contentHolder.classList.remove("animate-in");
+  void contentHolder.offsetWidth;
+
   seasonTitle.textContent = season.title;
   seasonDescription.textContent = season.description;
   seasonHours.textContent = seasonKey === currentSeason ? currentHours : season.hours;
@@ -206,6 +210,8 @@ function selectSeason(seasonKey, animateBackground = true) {
     seasonKey === currentSeason ? `Now: ${season.title}` : `Preview: ${season.title}`;
   seasonPeriod.textContent = season.period;
   currentPill.classList.toggle("is-hidden", seasonKey !== currentSeason);
+
+  contentHolder.classList.add("animate-in"); //new
 
   seasonButtons.forEach((button) => {
     const isSelected = button.dataset.season === seasonKey;
@@ -255,6 +261,7 @@ function centerFeaturedEvent() {
 /**
  * Automatically calculates and centers carousel content, locking overflow if items fit.
  */
+if(carousel){
 function centerCarousel() {
   const totalWidth = carousel.scrollWidth;
   const visibleWidth = carousel.clientWidth;
@@ -276,7 +283,7 @@ const optimizedResize = debounce(centerCarousel, 300);
 
 window.addEventListener('load', centerCarousel);
 window.addEventListener('resize', optimizedResize);
-
+}
 
 /* ==========================================================================
    6. Interactive map
@@ -406,6 +413,7 @@ function finishMapDrag(event) {
 }
 
 // --- Map Event Listeners ---
+if(mapWrapper){
 mapWrapper.addEventListener("pointerdown", (event) => {
   if (event.target.closest(".map-pointer, .map-abs")) {
     return;
@@ -466,7 +474,7 @@ panZones.forEach((zone) => {
 
 window.addEventListener('load', setInitialMapPosition);
 window.addEventListener('resize', debounce(setInitialMapPosition, 300));
-
+}
 
 /* ==========================================================================
    7. Scroll animations
@@ -538,6 +546,25 @@ function initializeScrollAnimations() {
 initializeScrollAnimations();
 
 
+/* ==========================================================================
+   7. Gallery carousel
+   ========================================================================== */
+
+const el = document.querySelector('.blaze-slider');
+new BlazeSlider(el, {
+  all: {
+    enableAutoplay: true,
+    autoplayInterval: 3000,
+    transitionDuration: 1000,
+    slidesToShow: 3,
+  },
+  '(max-width: 1000px)': {
+    slidesToShow: 2,
+  },
+  '(max-width: 500px)': {
+    slidesToShow: 1,
+  },
+});
 
 /* ==========================================================================
    MODAL UTILITIES (DRY CONFIGURATION)
