@@ -447,7 +447,7 @@ function openPinInfo(pin) {
 
 // mapWrapper.addEventListener("pointerup", finishMapDrag);
 // mapWrapper.addEventListener("pointercancel", finishMapDrag);
-
+if(mapWrapper){
 mapPointers.forEach((pin) => {
   pin.addEventListener("click", (event) => {
     if (mapWasDragged) {
@@ -552,6 +552,7 @@ window.addEventListener('resize', debounce(setInitialMapPosition, 300));
     // };
 
     window.addEventListener('resize', updateSize);
+}
 //-------------------- map smooth pan end
 /* ==========================================================================
    7. Scroll animations
@@ -785,3 +786,32 @@ prevImgBtn.addEventListener("click", () => {
 });
 }
 
+
+/* ==========================================================================
+   Navigation selector
+   ========================================================================== */
+document.addEventListener("DOMContentLoaded", () => {
+  // 1. Get the current page filename (e.g., "weddings.html" or "index.html")
+  let currentFile = window.location.pathname.split("/").pop();
+  
+  // If the URL ends in a slash (like http://localhost:5500/), the filename is empty.
+  // In that case, we default it to "index.html".
+  if (currentFile === "") {
+    currentFile = "index.html";
+  }
+
+  const navLinks = document.querySelectorAll(".nav-link");
+
+  navLinks.forEach(link => {
+    // 2. Get the filename from the link's href attribute
+    const linkFile = link.getAttribute("href").split("/").pop();
+
+    // 3. Compare them. If they match, add the active class!
+    if (currentFile === linkFile) {
+      link.classList.add("active");
+    } else {
+      // Clean up any lingering active classes just in case
+      link.classList.remove("active");
+    }
+  });
+});

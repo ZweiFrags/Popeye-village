@@ -180,7 +180,11 @@ a {
     opacity: var(--op);
     visibility: var(--vis);
 }
-
+.nav-link.active {
+  color: var(--color-accent);
+  font-weight: bold;
+  border-bottom: 2px solid var(--color-accent);
+}
 .Menu:before {
     content: "";
     position: absolute;
