@@ -55,6 +55,10 @@ const galleryDialog = document.querySelector('.gallery-dialog');
 const closeGallery = document.querySelector('[data-js="close-gallery"]');
 const dialogImage = document.querySelector('[data-js="dialog-image"]');
 
+// --- Gallery ---
+const imgDialog = document.querySelector(".img-dialog")
+const imageGallery = document.querySelector('[data-js="gallery-img"]')
+
 // --- scroll animation targets ---
 const heroRevealItems = document.querySelectorAll(
   ".promo-text-hldr, .info-text-hldr, .hero-section .section-content > .button, .tags-hldr"
@@ -549,7 +553,7 @@ initializeScrollAnimations();
 /* ==========================================================================
    7. Gallery carousel
    ========================================================================== */
-
+if(document.querySelector('.blaze-slider')){
 const el = document.querySelector('.blaze-slider');
 new BlazeSlider(el, {
   all: {
@@ -558,14 +562,14 @@ new BlazeSlider(el, {
     transitionDuration: 1000,
     slidesToShow: 3,
   },
-  '(max-width: 1000px)': {
+  '(max-width: 900px)': {
     slidesToShow: 2,
   },
   '(max-width: 500px)': {
     slidesToShow: 1,
   },
 });
-
+}
 /* ==========================================================================
    MODAL UTILITIES (DRY CONFIGURATION)
    ========================================================================== */
@@ -634,3 +638,76 @@ galleryImgs.forEach((card) => {
   });
 });
 setupDialog(galleryDialog, closeGallery);
+
+
+// 1. Grab your elements
+const blazeTrack = document.querySelector(".blaze-track");
+const prevImgBtn = document.getElementById("prevImgBtn");
+const nextImgBtn = document.getElementById("nextImgBtn");
+
+let currentImgIndex = 0;
+
+// 2. Dynamically gather ONLY the unique/original image sources
+// This ignores any cloning issues entirely
+function getGalleryImagesData() {
+  const allImgs = Array.from(document.querySelectorAll(".blaze-track .gallery-img"));
+  
+  // Filter out duplicates by tracking unique src strings
+  const uniqueImgs = [];
+  const seenSrcs = new Set();
+  
+  allImgs.forEach(img => {
+    if (!seenSrcs.has(img.src)) {
+      seenSrcs.add(img.src);
+      uniqueImgs.push({ src: img.src, alt: img.alt });
+    }
+  });
+  
+  return uniqueImgs;
+}
+
+// 3. Helper to update the modal display
+function updateModalImage(index, imagesData) {
+  if (!imagesData[index] || !imageGallery) return;
+  imageGallery.src = imagesData[index].src;
+  imageGallery.alt = imagesData[index].alt;
+}
+
+/* ==========================================================================
+   Gallery Modal Setup (Event Delegation)
+   ========================================================================== */
+if (blazeTrack) {
+  blazeTrack.addEventListener("click", (event) => {
+    // Find if the click happened on or inside a gallery-item
+    const item = event.target.closest(".gallery-item");
+    if (!item || !imgDialog  || !imageGallery) return;
+    
+    const targetImg = item.querySelector("img");
+    if (!targetImg) return;
+
+    const imagesData = getGalleryImagesData();
+    
+    // Find the correct index by matching the image source URL
+    currentImgIndex = imagesData.findIndex(img => img.src === targetImg.src);
+
+    if (currentImgIndex !== -1) {
+      updateModalImage(currentImgIndex, imagesData);
+      imgDialog .showModal();
+    }
+  });
+}
+setupDialog(imgDialog , closeGallery);
+
+// Next Button Click
+nextImgBtn.addEventListener("click", () => {
+  const imagesData = getGalleryImagesData();
+  currentImgIndex = (currentImgIndex + 1) % imagesData.length;
+  updateModalImage(currentImgIndex, imagesData);
+});
+
+// Prev Button Click
+prevImgBtn.addEventListener("click", () => {
+  const imagesData = getGalleryImagesData();
+  currentImgIndex = (currentImgIndex - 1 + imagesData.length) % imagesData.length;
+  updateModalImage(currentImgIndex, imagesData);
+});

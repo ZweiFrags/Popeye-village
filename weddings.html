@@ -220,21 +220,23 @@
     <p>This prototype will connect to the booking form when that page is designed.</p>
   </dialog>
 
-  <dialog class="booking-dialog event-dialog" data-js="event-dialog">
-    <button class="dialog-close" type="button" aria-label="Close event dialog" data-js="close-event">
-      &times;
-    </button>
-    <p class="dialog-kicker">Host your event</p>
-    <h2 data-js="event-dialog-title">Event</h2>
-    <p>This prototype will open the corresponding event page when that page is ready.</p>
-  </dialog>
-
   <dialog class="booking-dialog gallery-dialog" data-js="gallery-dialog">
     <button class="dialog-close" type="button" aria-label="Close gallery dialog" data-js="close-gallery">
       &times;
     </button>
     <div class="dialog-img-container">
     <img class="dialog-img" src="" alt="" data-js="dialog-image">
+    </div>
+  </dialog>
+
+    <dialog class="booking-dialog img-dialog" data-js="img-dialog">
+    <button class="dialog-close" type="button" aria-label="Close gallery dialog" data-js="close-gallery">
+      &times;
+    </button>
+    <div class="dialog-img-container">
+    <button id="prevImgBtn" class="nav-btn">&larr;</button>
+    <img class="dialog-img" src="" alt="" data-js="gallery-img">
+    <button id="nextImgBtn" class="nav-btn">&rarr;</button>
     </div>
   </dialog>
 
