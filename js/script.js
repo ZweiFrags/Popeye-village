@@ -19,7 +19,7 @@ const heroBackgroundCurrent = document.querySelector('[data-js="hero-bg-current"
 const heroBackgroundNext = document.querySelector('[data-js="hero-bg-next"]');
 const seasonTitle = document.querySelector('[data-js="season-title"]');
 const seasonDescription = document.querySelector('[data-js="season-description"]');
-const seasonHours = document.querySelector('[data-js="season-hours"]');
+const seasonHours = document.querySelectorAll('[data-js="season-hours"]');
 const seasonStatus = document.querySelector('[data-js="season-status"]');
 const seasonPeriod = document.querySelector('[data-js="season-period"]');
 const currentPill = document.querySelector('[data-js="current-pill"]');
@@ -203,18 +203,24 @@ function selectSeason(seasonKey, animateBackground = true) {
   hero.dataset.season = seasonKey;
 
   const contentHolder = document.querySelector(".info-text-hldr"); //new
-  contentHolder.classList.remove("animate-in");
+  // contentHolder.classList.remove("animate-in");
+  hero.classList.remove("hero-switch");
+  
   void contentHolder.offsetWidth;
 
   seasonTitle.textContent = season.title;
   seasonDescription.textContent = season.description;
-  seasonHours.textContent = seasonKey === currentSeason ? currentHours : season.hours;
+  // seasonHours.textContent = seasonKey === currentSeason ? currentHours : season.hours;
+
+  seasonHours.forEach((item) => item.textContent = seasonKey === currentSeason ? currentHours : season.hours);
+  
   seasonStatus.textContent =
     seasonKey === currentSeason ? `Now: ${season.title}` : `Preview: ${season.title}`;
   seasonPeriod.textContent = season.period;
   currentPill.classList.toggle("is-hidden", seasonKey !== currentSeason);
 
-  contentHolder.classList.add("animate-in"); //new
+  // contentHolder.classList.add("animate-in"); //new
+  hero.classList.add("hero-switch");
 
   seasonButtons.forEach((button) => {
     const isSelected = button.dataset.season === seasonKey;
@@ -563,12 +569,12 @@ function getCssPercentValue(element, propertyName) {
 }
 
 function prepareScrollAnimations() {
-  heroRevealItems.forEach((item, index) => {
-    item.style.setProperty("--reveal-delay", `${index * 110}ms`);
-  });
+  // heroRevealItems.forEach((item, index) => {
+  //   item.style.setProperty("--reveal-delay", `${index * 110}ms`);
+  // });
 
   requestAnimationFrame(() => {
-    hero?.classList.add("hero-loaded");
+    hero?.classList.add("hero-loaded", "hero-switch");
   });
 
   mapPointers.forEach((pin, index) => {
@@ -591,10 +597,10 @@ function prepareScrollAnimations() {
 }
 
 function initializeScrollAnimations() {
-  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-    document.documentElement.classList.add("reduced-motion");
-    return;
-  }
+  // if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+  //   document.documentElement.classList.add("reduced-motion");
+  //   return;
+  // }
 
   prepareScrollAnimations();
 
