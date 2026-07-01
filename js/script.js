@@ -57,6 +57,8 @@ const dialogImage = document.querySelector('[data-js="dialog-image"]');
 // --- Gallery ---
 const imgDialog = document.querySelector(".img-dialog")
 const imageGallery = document.querySelector('[data-js="gallery-img"]')
+const blazeTracks = document.querySelectorAll(".blaze-track");
+let currentGalleryRoot = document;
 
 // --- scroll animation targets ---
 const heroRevealItems = document.querySelectorAll(
@@ -577,6 +579,33 @@ function prepareScrollAnimations() {
     hero?.classList.add("hero-loaded", "hero-switch");
   });
 
+  document
+    .querySelectorAll(".history-info .info, .history-info .cover-carousel .gallery-item, .history-info .google-map")
+    .forEach((item) => item.classList.add("scroll-fade"));
+
+  document.querySelectorAll(".history-info .text-reveal").forEach((element) => {
+    if (element.dataset.revealPrepared === "true") {
+      return;
+    }
+
+    const text = element.textContent.trim();
+    if (!text) {
+      return;
+    }
+
+    const parts = text.match(/[^.!?]+[.!?]?|\S+/g) || [text];
+    element.textContent = "";
+    element.dataset.revealPrepared = "true";
+
+    parts.forEach((part, index) => {
+      const span = document.createElement("span");
+      span.className = "reveal-part";
+      span.style.setProperty("--reveal-delay", `${Math.min(index * 45, 720)}ms`);
+      span.textContent = `${part.trim()}${index === parts.length - 1 ? "" : " "}`;
+      element.append(span);
+    });
+  });
+
   mapPointers.forEach((pin, index) => {
     const y = getCssPercentValue(pin, "--y");
     const regionDelay = y < 45 ? 0 : y < 60 ? 180 : 360;
@@ -625,6 +654,12 @@ function initializeScrollAnimations() {
       observer.observe(element);
     }
   });
+
+  document
+    .querySelectorAll(".history-info .scroll-fade, .history-info .text-reveal")
+    .forEach((element) => {
+      observer.observe(element);
+    });
 }
 
 initializeScrollAnimations();
@@ -633,23 +668,27 @@ initializeScrollAnimations();
 /* ==========================================================================
    7. Gallery carousel
    ========================================================================== */
-if(document.querySelector('.blaze-slider')){
-const el = document.querySelector('.blaze-slider');
-new BlazeSlider(el, {
-  all: {
-    enableAutoplay: true,
-    autoplayInterval: 3000,
-    transitionDuration: 1000,
-    slidesToShow: 3,
-  },
-  '(max-width: 900px)': {
-    slidesToShow: 2,
-  },
-  '(max-width: 500px)': {
-    slidesToShow: 1,
-  },
+document.querySelectorAll(".blaze-slider").forEach((el) => {
+  const isCoverCarousel = el.classList.contains("cover-carousel");
+
+  new BlazeSlider(el, {
+    all: {
+      enableAutoplay: true,
+      autoplayInterval: isCoverCarousel ? 2600 : 3000,
+      transitionDuration: isCoverCarousel ? 900 : 1000,
+      slidesToShow: isCoverCarousel ? 5 : 3,
+    },
+    "(max-width: 1200px)": {
+      slidesToShow: isCoverCarousel ? 4 : 3,
+    },
+    "(max-width: 900px)": {
+      slidesToShow: 2,
+    },
+    "(max-width: 500px)": {
+      slidesToShow: 1,
+    },
+  });
 });
-}
 /* ==========================================================================
    MODAL UTILITIES (DRY CONFIGURATION)
    ========================================================================== */
@@ -720,8 +759,6 @@ galleryImgs.forEach((card) => {
 setupDialog(galleryDialog, closeGallery);
 
 
-// 1. Grab your elements
-const blazeTrack = document.querySelector(".blaze-track");
 const prevImgBtn = document.getElementById("prevImgBtn");
 const nextImgBtn = document.getElementById("nextImgBtn");
 
@@ -729,8 +766,8 @@ let currentImgIndex = 0;
 
 // 2. Dynamically gather ONLY the unique/original image sources
 // This ignores any cloning issues entirely
-function getGalleryImagesData() {
-  const allImgs = Array.from(document.querySelectorAll(".blaze-track .gallery-img"));
+function getGalleryImagesData(root = currentGalleryRoot) {
+  const allImgs = Array.from(root.querySelectorAll(".gallery-img"));
   
   // Filter out duplicates by tracking unique src strings
   const uniqueImgs = [];
@@ -756,14 +793,25 @@ function updateModalImage(index, imagesData) {
 /* ==========================================================================
    Gallery Modal Setup (Event Delegation)
    ========================================================================== */
-if (blazeTrack) {
-  blazeTrack.addEventListener("click", (event) => {
+if (blazeTracks.length) {
+  blazeTracks.forEach((track) => track.addEventListener("click", (event) => {
     // Find if the click happened on or inside a gallery-item
     const item = event.target.closest(".gallery-item");
-    if (!item || !imgDialog  || !imageGallery) return;
+    if (!item) return;
     
     const targetImg = item.querySelector("img");
     if (!targetImg) return;
+
+    currentGalleryRoot = item.closest(".blaze-slider") || document;
+
+    if (!imgDialog || !imageGallery) {
+      if (galleryDialog && dialogImage) {
+        dialogImage.src = targetImg.src;
+        dialogImage.alt = targetImg.alt;
+        galleryDialog.showModal();
+      }
+      return;
+    }
 
     const imagesData = getGalleryImagesData();
     
@@ -772,21 +820,23 @@ if (blazeTrack) {
 
     if (currentImgIndex !== -1) {
       updateModalImage(currentImgIndex, imagesData);
-      imgDialog .showModal();
+      imgDialog.showModal();
     }
-  });
-  setupDialog(imgDialog , closeGallery);
+  }));
+  setupDialog(imgDialog, closeGallery);
 
 // Next Button Click
-nextImgBtn.addEventListener("click", () => {
+nextImgBtn?.addEventListener("click", () => {
   const imagesData = getGalleryImagesData();
+  if (!imagesData.length) return;
   currentImgIndex = (currentImgIndex + 1) % imagesData.length;
   updateModalImage(currentImgIndex, imagesData);
 });
 
 // Prev Button Click
-prevImgBtn.addEventListener("click", () => {
+prevImgBtn?.addEventListener("click", () => {
   const imagesData = getGalleryImagesData();
+  if (!imagesData.length) return;
   currentImgIndex = (currentImgIndex - 1 + imagesData.length) % imagesData.length;
   updateModalImage(currentImgIndex, imagesData);
 });
