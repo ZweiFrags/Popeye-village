@@ -579,9 +579,9 @@ function prepareScrollAnimations() {
     hero?.classList.add("hero-loaded", "hero-switch");
   });
 
-  document
-    .querySelectorAll(".history-info .info, .history-info .cover-carousel .gallery-item, .history-info .google-map")
-    .forEach((item) => item.classList.add("scroll-fade"));
+document
+  .querySelectorAll(".history-info .info, .history-info .cover-carousel .gallery-item, .history-info .google-map")
+  .forEach((item) => item.classList.add("scroll-fade"));
 
   document.querySelectorAll(".history-info .text-reveal").forEach((element) => {
     if (element.dataset.revealPrepared === "true") {
@@ -676,16 +676,19 @@ document.querySelectorAll(".blaze-slider").forEach((el) => {
       enableAutoplay: true,
       autoplayInterval: isCoverCarousel ? 2600 : 3000,
       transitionDuration: isCoverCarousel ? 900 : 1000,
-      slidesToShow: isCoverCarousel ? 5 : 3,
+      slidesToShow: 5,
+    },
+    "(max-width: 1400px)": {
+    slidesToShow: 5,
     },
     "(max-width: 1200px)": {
-      slidesToShow: isCoverCarousel ? 4 : 3,
+      slidesToShow: 4,
     },
-    "(max-width: 900px)": {
-      slidesToShow: 2,
+    "(max-width: 100px)": {
+      slidesToShow: 3,
     },
     "(max-width: 500px)": {
-      slidesToShow: 1,
+      slidesToShow: 2,
     },
   });
 });
@@ -744,25 +747,28 @@ eventCards.forEach((card) => {
 setupDialog(eventDialog, closeEventButton);
 
 // 3. Gallery Modal Setup
-galleryImgs.forEach((card) => {
-  card.addEventListener("click", () => {
-    if (!galleryDialog || !dialogImage) {
-      return;
-    }
 
-    const clickedImgElement = card.querySelector("img");
-    dialogImage.src = clickedImgElement.src;
-    dialogImage.alt = clickedImgElement.alt;
-    galleryDialog.showModal();
-  });
-});
-setupDialog(galleryDialog, closeGallery);
+// ============= FOOTER GALLERY ==========
+// galleryImgs.forEach((card) => {
+//   card.addEventListener("click", () => {
+//     if (!galleryDialog || !dialogImage) {
+//       return;
+//     }
 
+//     const clickedImgElement = card.querySelector("img");
+//     dialogImage.src = clickedImgElement.src;
+//     dialogImage.alt = clickedImgElement.alt;
+//     galleryDialog.showModal();
+//   });
+// });
+// setupDialog(galleryDialog, closeGallery);
+// ============= FOOTER GALLERY ==========
 
 const prevImgBtn = document.getElementById("prevImgBtn");
 const nextImgBtn = document.getElementById("nextImgBtn");
 
-let currentImgIndex = 0;
+// let currentImgIndex = 0;
+// NEW CHANGES LOOK INTO currentImgIndex. TODO
 
 // 2. Dynamically gather ONLY the unique/original image sources
 // This ignores any cloning issues entirely
@@ -793,55 +799,56 @@ function updateModalImage(index, imagesData) {
 /* ==========================================================================
    Gallery Modal Setup (Event Delegation)
    ========================================================================== */
-if (blazeTracks.length) {
-  blazeTracks.forEach((track) => track.addEventListener("click", (event) => {
-    // Find if the click happened on or inside a gallery-item
-    const item = event.target.closest(".gallery-item");
-    if (!item) return;
+// =========== CAN DELETE THIS ===========
+// if (blazeTracks.length) {
+//   blazeTracks.forEach((track) => track.addEventListener("click", (event) => {
+//     // Find if the click happened on or inside a gallery-item
+//     const item = event.target.closest(".gallery-item");
+//     if (!item) return;
     
-    const targetImg = item.querySelector("img");
-    if (!targetImg) return;
+//     const targetImg = item.querySelector("img");
+//     if (!targetImg) return;
 
-    currentGalleryRoot = item.closest(".blaze-slider") || document;
+//     currentGalleryRoot = item.closest(".blaze-slider") || document;
 
-    if (!imgDialog || !imageGallery) {
-      if (galleryDialog && dialogImage) {
-        dialogImage.src = targetImg.src;
-        dialogImage.alt = targetImg.alt;
-        galleryDialog.showModal();
-      }
-      return;
-    }
+//     if (!imgDialog || !imageGallery) {
+//       if (galleryDialog && dialogImage) {
+//         dialogImage.src = targetImg.src;
+//         dialogImage.alt = targetImg.alt;
+//         galleryDialog.showModal();
+//       }
+//       return;
+//     }
 
-    const imagesData = getGalleryImagesData();
+//     const imagesData = getGalleryImagesData();
     
-    // Find the correct index by matching the image source URL
-    currentImgIndex = imagesData.findIndex(img => img.src === targetImg.src);
+//     // Find the correct index by matching the image source URL
+//     currentImgIndex = imagesData.findIndex(img => img.src === targetImg.src);
 
-    if (currentImgIndex !== -1) {
-      updateModalImage(currentImgIndex, imagesData);
-      imgDialog.showModal();
-    }
-  }));
-  setupDialog(imgDialog, closeGallery);
+//     if (currentImgIndex !== -1) {
+//       updateModalImage(currentImgIndex, imagesData);
+//       imgDialog.showModal();
+//     }
+//   }));
+//   setupDialog(imgDialog, closeGallery);
 
-// Next Button Click
-nextImgBtn?.addEventListener("click", () => {
-  const imagesData = getGalleryImagesData();
-  if (!imagesData.length) return;
-  currentImgIndex = (currentImgIndex + 1) % imagesData.length;
-  updateModalImage(currentImgIndex, imagesData);
-});
+// // Next Button Click
+// nextImgBtn?.addEventListener("click", () => {
+//   const imagesData = getGalleryImagesData();
+//   if (!imagesData.length) return;
+//   currentImgIndex = (currentImgIndex + 1) % imagesData.length;
+//   updateModalImage(currentImgIndex, imagesData);
+// });
 
-// Prev Button Click
-prevImgBtn?.addEventListener("click", () => {
-  const imagesData = getGalleryImagesData();
-  if (!imagesData.length) return;
-  currentImgIndex = (currentImgIndex - 1 + imagesData.length) % imagesData.length;
-  updateModalImage(currentImgIndex, imagesData);
-});
-}
-
+// // Prev Button Click
+// prevImgBtn?.addEventListener("click", () => {
+//   const imagesData = getGalleryImagesData();
+//   if (!imagesData.length) return;
+//   currentImgIndex = (currentImgIndex - 1 + imagesData.length) % imagesData.length;
+//   updateModalImage(currentImgIndex, imagesData);
+// });
+// }
+// =========== CAN DELETE THIS ===========
 
 /* ==========================================================================
    Navigation selector

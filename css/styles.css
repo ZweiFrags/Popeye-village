@@ -636,8 +636,18 @@ font-size: 12px;
   width: 100%;
   overflow: hidden;
   background: var(--color-grayish);
-  padding-left: 16px;
-  padding-right: 16px;
+  padding: 0 max(24px, calc((100vw - var(--content-max-width)) / 2));
+}
+
+.section-content,
+.events-section-content,
+.news-section-content,
+.footer-content,
+.footer-images {
+  width: 100%;
+  max-width: var(--content-max-width);
+  min-width: 0;
+  margin: 0 auto;
 }
 .hero-section {
   align-items: flex-end;
@@ -697,9 +707,6 @@ font-size: 12px;
   flex: 1 0 0;
   align-items: flex-start;
   justify-content: center;
-  width: 100%;
-  max-width: var(--content-max-width);
-  min-width: 0;
 }
 
 
@@ -911,8 +918,6 @@ font-size: 12px;
   align-items: center;
   justify-content: center;
   gap: 24px;
-  width: 100%;
-  max-width: var(--content-max-width);
 }
 
 .events-header {
@@ -1564,11 +1569,6 @@ font-size: 12px;
   padding-bottom: 100px;
 }
 
-.news-section-content {
-  width: min(100%, var(--content-max-width));
-  margin: 0 auto;
-}
-
 .news-header {
   display: flex;
   align-items: center;
@@ -1691,12 +1691,6 @@ font-size: 12px;
   flex-direction: column;
   gap: 48px;
   padding-bottom: 60px;
-}
-
-.footer-content,
-.footer-images {
-  width: min(100%, var(--content-max-width));
-  margin: 0 auto;
 }
 
 .footer-content {
@@ -1983,10 +1977,6 @@ font-size: 12px;
 
 /* Wedding page */
 
-.wedding-gallery{
-  
-}
-
 /* Gallery section */
 .gallery-introduction{
   display: grid;
@@ -2005,9 +1995,6 @@ font-size: 12px;
   height: 100%;
   object-fit: cover; 
   border-radius: 10px;
-}
-.gallery-content{
-
 }
 .gallery-description{
   display: flex;
@@ -2055,13 +2042,11 @@ font-size: 12px;
 
 /* ------------------------------------------------- History info section ----------------------------------- */
 .section-info {
-  display: flex;
   flex-direction: column;
   align-items: center;
   gap: 24px;
-  padding: 120px max(24px, calc((100vw - var(--content-max-width)) / 2));
-  background: var(--color-grayish);
-  overflow: hidden;
+  padding-top: 120px;
+  padding-bottom: 120px;
 }
 
 .history-info .info {
@@ -2291,7 +2276,7 @@ font-size: 12px;
   border-radius: var(--block-radius);
 }
 
-.history-info .cover-carousel {
+.history-info .cover-carousel, .carousel-w100 {
   width: min(2136px, calc(100vw + 216px));
   max-width: none;
   overflow: hidden;
@@ -2307,18 +2292,17 @@ font-size: 12px;
 }
 
 .history-info .cover-carousel .gallery-item {
-  height: 588px;
-  padding: 24px;
+  height: 460px;
+  padding: 12px;
   border-radius: var(--block-radius);
   cursor: pointer;
 }
 
 .history-info .cover-carousel .gallery-img {
   border-radius: 10px;
-  object-fit: cover;
 }
 
-.js-enabled .history-info .scroll-fade {
+.js-enabled .history-info .scroll-fade .info-block{
   opacity: 0.2;
   transform: translateY(36px);
   will-change: opacity, transform;
@@ -2333,7 +2317,8 @@ font-size: 12px;
   will-change: opacity;
 }
 
-.js-enabled .history-info .scroll-fade.is-in-view {
+
+.js-enabled .history-info .scroll-fade.is-in-view .info-block{
   animation: history-fade-rise-in 720ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
@@ -2680,7 +2665,8 @@ font-size: 12px;
   }
 
   .section-info {
-    padding: 96px 24px;
+    padding-top: 96px;
+    padding-bottom: 96px;
   }
 
   .history-info .info-hldr {
@@ -2703,7 +2689,7 @@ font-size: 12px;
     flex-basis: min(42vw, 460px);
   }
 
-  .history-info .cover-carousel {
+  .history-info .cover-carousel, .carousel-w100 {
     width: calc(100vw + 144px);
   }
 
@@ -2945,11 +2931,6 @@ font-size: 12px;
   --block-radius: 20px;
   }
   
-  .section{
-    padding-left: 12px;
-    padding-right: 12px;
-  }
-
   .section-info {
     padding-top: 84px;
     padding-bottom: 84px;
@@ -2991,7 +2972,7 @@ font-size: 12px;
     min-height: 320px;
   }
 
-  .history-info .cover-carousel {
+  .history-info .cover-carousel, .carousel-w100 {
     width: calc(100vw + 96px);
   }
 
@@ -3163,18 +3144,19 @@ font-size: 12px;
 @media (max-width: 640px) {
   .section-info {
     gap: 18px;
-    padding: 72px 12px;
+    padding-top: 72px;
+    padding-bottom: 72px;
   }
 
   .history-info .type-1,
   .history-info .type-4 {
-    margin-inline: -12px;
-    width: calc(100% + 24px);
+    margin-inline: -24px;
+    width: calc(100% + 48px);
   }
 
   .history-info .info-hero-card,
   .history-info .info-entrance {
-    padding-inline: 12px;
+    padding-inline: 24px;
   }
 
   .history-info .info-hldr {
@@ -3205,7 +3187,7 @@ font-size: 12px;
     min-height: 260px;
   }
 
-  .history-info .cover-carousel {
+  .history-info .cover-carousel, .carousel-w100 {
     width: calc(100vw + 56px);
   }
 
