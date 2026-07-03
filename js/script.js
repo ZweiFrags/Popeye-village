@@ -684,10 +684,10 @@ document.querySelectorAll(".blaze-slider").forEach((el) => {
     "(max-width: 1200px)": {
       slidesToShow: 4,
     },
-    "(max-width: 100px)": {
+    "(max-width: 900px)": {
       slidesToShow: 3,
     },
-    "(max-width: 500px)": {
+    "(max-width: 640px)": {
       slidesToShow: 2,
     },
   });

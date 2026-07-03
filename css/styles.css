@@ -8,8 +8,10 @@
   --icon-close: url("../assets/icon/cross.svg");
   --icon-menu: url("../assets/icon/menu-icon.svg");
   --icon-location: url("../assets/icon/location-icon.svg");
-  --icon-history-phone: url("../assets/icon/footer-phone.svg");
-  --icon-history-photo: url("../assets/icon/footer-email.svg");
+  --icon-phone: url("../assets/icon/footer-phone.svg");
+  --icon-photo: url("../assets/icon/camera.svg");
+  --icon-knife-n-fork: url("../assets/icon/knife_n_fork.svg");
+  --icon-time-alert: url("../assets/icon/time_alert.svg");
 
   --h1: clamp(2.25rem, 1.828rem + 1.875vi, 3rem); /* 36-48px */
   --h2: clamp(1.75rem, 1.609rem + 0.625vi, 2rem); /* 28-32px */
@@ -51,6 +53,8 @@
   --Menu-bg-hover: #00c8ff2e;
   --Menu-rnd: 2em;
 }
+
+
 
 .h1 {--f-s: var(--h1); --lh: .95em}
 .h2 {--f-s: var(--h2); --lh: 1em}
@@ -108,11 +112,17 @@ dialog{
 .icon-location{
   --icon: var(--icon-location);
 }
-.icon-history-phone{
-  --icon: var(--icon-history-phone);
+.icon-phone{
+  --icon: var(--icon-phone);
 }
-.icon-history-photo{
-  --icon: var(--icon-history-photo);
+.icon-photo{
+  --icon: var(--icon-photo);
+}
+.icon-time-alert{
+    --icon: var(--icon-time-alert);
+}
+.icon-knife-fork{
+    --icon: var(--icon-knife-n-fork);
 }
 
 [class*=icon-]{
@@ -440,6 +450,7 @@ input:checked~.Burger .l3 {
 /* ----------------------- Menu end ----------------------------------------------- */
 
 .header-content {
+  box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.08), 0 2px 4px 0 rgba(0, 0, 0, 0.12);
   position: relative;
   z-index: 2;
   display: flex;
@@ -1975,6 +1986,10 @@ font-size: 12px;
   transform: scale(1.1);
 }
 
+.footer-gallery::-webkit-scrollbar {
+  display: none;
+}
+
 /* Wedding page */
 
 /* Gallery section */
@@ -2161,7 +2176,8 @@ font-size: 12px;
 .history-info .info-hero-card .block-60,
 .history-info .info-entrance .block-60 {
   color: var(--color-white);
-  text-shadow: 0 0 20px rgba(0, 0, 0, 0.45);
+  text-shadow: 1px 1px 2px #333333, 0 0 1px #333333, 0 0 0.2px #333333;
+  /* added text shadow */
 }
 
 .history-info .block-60 {
@@ -2303,7 +2319,7 @@ font-size: 12px;
 }
 
 .history-info .cover-carousel .gallery-item {
-  height: 460px;
+  height: 520px;
   padding: 12px;
   border-radius: var(--block-radius);
   cursor: pointer;
@@ -2432,6 +2448,12 @@ font-size: 12px;
     animation-range: 0 62vh;
     will-change: opacity, transform;
   }
+  .parallax-effect-hldr{
+    animation: simple-parallax linear both;
+    animation-timeline: scroll(root block);
+    animation-range: 0 95vh;
+    will-change: transform;
+  }
 }
 
 
@@ -2540,6 +2562,15 @@ font-size: 12px;
   to {
     transform: translateY(48vh);
   }
+}
+
+@keyframes simple-parallax  {
+    from {
+        transform: translateY(-10%);
+    }
+    to {
+        transform: translateY(10%);
+    }
 }
 
 @keyframes pulse {
@@ -2703,7 +2734,7 @@ font-size: 12px;
   }
 
   .history-info .cover-carousel .gallery-item {
-    height: 520px;
+    height: 420px;
   }
 
   .site-header {
@@ -2960,6 +2991,7 @@ font-size: 12px;
 
   .history-info .info-hldr {
     gap: 24px;
+    padding: 0;
   }
 
   .history-info .block-40,
@@ -3133,7 +3165,10 @@ font-size: 12px;
     margin-right: -12px;
     padding-right: 12px;
     padding-bottom: 12px;
-    overflow-x: auto;
+    overflow-x: auto; 
+    overflow-y: hidden;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
     scroll-snap-type: x mandatory;
   }
 
@@ -3160,15 +3195,18 @@ font-size: 12px;
   .history-info .type-1{
     margin-inline: -24px;
     width: calc(100% + 48px);
+    padding-bottom: 24px;
   }
+
 
   .history-info .info-hero-card{
     padding-inline: 24px;
   }
 
   .history-info .info-hldr {
-    padding: 36px 0;
+    padding:  0;
   }
+  /* changed padding here */
 
   .history-info .info-block,
   .history-info .block-50-cntnt {

@@ -197,7 +197,7 @@
         background: var(--ppp-title-bg);
         padding:calc(var(--ppp-x-size)*1.4) var(--ppp-txt-padd) var(--ppp-txt-padd)
     }
-    button{
+    /* button{
             border-radius: 5px;
             border: none;
             padding: 14px 24px;
@@ -207,4 +207,4 @@
             font-size: 16px;
             margin: 4px 2px;
             cursor: pointer;
-    }    
+    }     */
