@@ -2104,19 +2104,22 @@ font-size: 12px;
   padding: 60px 0;
 }
 
-.history-info .info-hero-card,
-.history-info .info-entrance {
+.history-info .info-hero-card
+/* ,.history-info .info-entrance  */
+{
   min-height: 466px;
+}
+.history-info .info-hero-card
+,.history-info .info-entrance {
   overflow: hidden;
 }
-
 .history-info .info-hero-card {
-  padding: 60px 0;
+  padding: 60px max(24px, calc((100% - var(--content-max-width)) / 2));;
 }
 
-.history-info .info-entrance {
+/* .history-info .info-entrance {
   min-height: 362px;
-}
+} */
 
 .history-info .history-bg-img {
   position: absolute;
