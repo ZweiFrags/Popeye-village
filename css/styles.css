@@ -9,9 +9,17 @@
   --icon-menu: url("../assets/icon/menu-icon.svg");
   --icon-location: url("../assets/icon/location-icon.svg");
   --icon-phone: url("../assets/icon/footer-phone.svg");
-  --icon-photo: url("../assets/icon/camera.svg");
+  --icon-camera: url("../assets/icon/camera.svg");
   --icon-knife-n-fork: url("../assets/icon/knife_n_fork.svg");
   --icon-time-alert: url("../assets/icon/time_alert.svg");
+  --icon-people: url(../assets/icon/people.svg);
+  --icon-game: url("../assets/icon/game.svg");
+  --icon-camera-2: url("../assets/icon/camera_2.svg");
+  --icon-museum: url("../assets/icon/museum.svg");
+  --icon-shop: url("../assets/icon/shop.svg");
+  --icon-sunbath: url("../assets/icon/sunbath.svg");
+  --icon-restroom: url("../assets/icon/restroom.svg");
+  --icon-cutlery: url("../assets/icon/cutlery.svg");
 
   --h1: clamp(2.25rem, 1.828rem + 1.875vi, 3rem); /* 36-48px */
   --h2: clamp(1.75rem, 1.609rem + 0.625vi, 2rem); /* 28-32px */
@@ -115,14 +123,38 @@ dialog{
 .icon-phone{
   --icon: var(--icon-phone);
 }
-.icon-photo{
-  --icon: var(--icon-photo);
+.icon-camera{
+  --icon: var(--icon-camera);
 }
 .icon-time-alert{
     --icon: var(--icon-time-alert);
 }
 .icon-knife-fork{
     --icon: var(--icon-knife-n-fork);
+}
+.icon-people{
+  --icon: var(--icon-people);
+}
+.icon-game{
+  --icon: var(--icon-game);
+}
+.icon-camera-2{
+  --icon: var(--icon-camera-2);
+}
+.icon-museum{
+  --icon: var(--icon-museum);
+}
+.icon-shop{
+  --icon: var(--icon-shop);
+}
+.icon-sunbath{
+  --icon: var(--icon-sunbath);
+}
+.icon-restroom{
+  --icon: var(--icon-restroom);
+}
+.icon-cutlery{
+  --icon: var(--icon-cutlery)
 }
 
 [class*=icon-]{
@@ -267,7 +299,7 @@ a {
     overflow: hidden;
     padding: 0 var(--page-pd);
     white-space: nowrap;
-    padding-left: 32px;
+    padding-left: 16px;
 }
 
 .Menu li {
@@ -283,7 +315,8 @@ a {
 
 .Menu :where(a,span) {
     display: flex;
-    padding: var(--Menu-el-padd);
+    /* padding: var(--Menu-el-padd); */
+    padding: 0.5em 0.75em;
     color: var(--Menu-t-clr);
     font-weight: var(--Menu-fw);
     font-size: var(--Menu-f-size);
@@ -450,7 +483,7 @@ input:checked~.Burger .l3 {
 /* ----------------------- Menu end ----------------------------------------------- */
 
 .header-content {
-  box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.08), 0 2px 4px 0 rgba(0, 0, 0, 0.12);
+  box-shadow: 0 0 40px 0 rgba(0, 0, 0, 0.2);
   position: relative;
   z-index: 2;
   display: flex;
@@ -801,7 +834,7 @@ font-size: 12px;
   white-space: nowrap;
 }
 .hdr-persistent-cntnt > .info-tag{
-  padding: 0 1rem 0 0;
+  padding: 0 0 0 0;
 }
 
 .segmented-controls {
@@ -1219,40 +1252,57 @@ font-size: 12px;
   transform: translate(-50%, -50%);
   transform-origin: 50% 70%;
   transition: filter 160ms ease, transform 180ms ease;
+
+  display: flex;
+  justify-content: center;
 }
 
-.map-pointer::before {
+.map-pointer::after {
   content: "";
   position: absolute;
-  /* top: 3px;
-  left: 7px;
-  width: 28px;
-  height: 28px; */
-  top: 0;
+  /* top: 0;
   left: 5px;
   width: 32px;
-  height: 32px;
+  height: 32px; */
+  top: -2px;
+  left: 2.5px;
+  width: 36px;
+  height: 36px;
   border-radius: 50% 50% 50% 5px;
   background: var(--color-white);
   transform: rotate(-45deg);
   transition: background-color 180ms ease;
   pointer-events: none;
+  z-index: -1;
+}
+.map-pointer::before{
+  position: absolute;
+  top: 3px;
+  background: var(--color-accent);
+  width: 1.5em;
+  height: 1.5em;
 }
 
-.map-pointer::after {
-  content: attr(data-id);
+/* .map-pointer::after {
+  content: "";
   position: absolute;
-  top: 8px;
-  left: 0;
-  width: 100%;
+  top: 6px;
+  left: auto;
+  right: auto;
+  width: 50%;
+  height: 50%;
   border-radius: 50%;
   font-size: var(--p);
   color: var(--color-accent);
   font-weight: 600;
-  /* background: var(--color-accent); */
   transition: background-color 180ms ease;
   pointer-events: none;
-}
+
+  background-image: var(--pointer-icon);
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+} */
 
 
 .map-pointer:hover {
@@ -1273,12 +1323,12 @@ font-size: 12px;
   transform: translate(-50%, -50%) scale(1.28);
 }
 
-.map-pointer.is-active::before {
+.map-pointer.is-active::after {
   background: var(--color-accent);
 }
 
-.map-pointer.is-active::after {
-  color: var(--color-white);
+.map-pointer.is-active::before {
+  background: var(--color-white);
 }
 
 .map-abs {
@@ -2747,7 +2797,7 @@ font-size: 12px;
 
   .header-content {
   min-height: 56px;
-  box-shadow: 0 4px 2px rgba(0, 0, 0, 0);
+  box-shadow: 0 0 40px 0 rgba(0, 0, 0, 0.2);
   }
 
   .site-header.is-menu-open .header-content {
