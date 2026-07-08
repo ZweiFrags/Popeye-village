@@ -383,12 +383,17 @@ function keepPinVisible(pin) {
 function openPinInfo(pin) {
   mapPointers.forEach((item) => item.classList.toggle("is-active", item === pin));
 
+  const currentIcon = [...pinLocation.classList].find(c => c.startsWith('icon-'));
+  const newIcon = [...pin.classList].find(c => c.startsWith('icon-'));
+  pinLocation.classList.replace(currentIcon, newIcon);
+
+
   pinLocation.dataset.value = pin.dataset.id;
   pinTitle.textContent = pin.dataset.title;
   pinDescription.textContent = pin.dataset.descr;
   pinInfo.hidden = false;
   pinInfo.classList.remove("is-closing");
-
+  // pinLocation
   requestAnimationFrame(() => {
     pinInfo.classList.add("is-visible");
   });

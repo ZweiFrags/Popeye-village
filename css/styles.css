@@ -1444,7 +1444,7 @@ font-size: 12px;
 .location {
   text-indent: 0;
 }
-.location.icon-location:before{
+.location[class*=icon-]:before{
   z-index: -1;
   position: absolute;
   width: 26px;
@@ -1452,7 +1452,7 @@ font-size: 12px;
   color: var(--color-accent);
 }
 
-.location > *,
+/* .location > *,
 .location {
   writing-mode: horizontal-tb;
 }
@@ -1472,8 +1472,7 @@ font-size: 12px;
 
 .-pin-info .location::after {
   color: var(--color-white);
-  /* transform: rotate(45deg); */
-}
+} */
 
 .-no-bg {
   background: transparent;
