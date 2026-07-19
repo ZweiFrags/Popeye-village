@@ -5,6 +5,8 @@
 document.documentElement.classList.add("js-enabled");
 
 // --- global ---
+const isTouchDevice = window.matchMedia('(pointer: coarse)').matches;
+
 const header = document.querySelector('[data-js="site-header"]');
 const mobileNav = document.querySelector('[data-js="mobile-nav"]');
 
@@ -26,7 +28,7 @@ const currentPill = document.querySelector('[data-js="current-pill"]');
 const seasonButtons = [...document.querySelectorAll("[data-season]")];
 
 // --- events section ---
-const eventsHolder = document.querySelector('[data-js="events-holder"]');
+// const eventsHolder = document.querySelector('[data-js="events-holder"]');
 const featuredEvent = document.querySelector('[data-js="featured-event"]');
 const carousel = document.querySelector('.events-holder'); //carousel
 const eventCards = document.querySelectorAll("[data-event-name]"); // takes all event cards
@@ -37,7 +39,6 @@ const closeEventButton = document.querySelector('[data-js="close-event"]');
 // --- the map ---
 const mapWrapper = document.querySelector('[data-js="map-wrapper"]');
 const mapElement = document.querySelector('[data-js="map"]');
-const map = document.querySelector('[data-js="map"]');
 const mapPointers = [...document.querySelectorAll(".map-pointer")];
 const panZones = document.querySelectorAll("[data-pan]");
 
@@ -106,7 +107,6 @@ let backgroundSwapId = 0;
 
 // --- Map Drag & Pan State ---
 let mapX = 0;
-let mapY = 0;
 let dragStartX = 0;
 let dragStartY = 0;
 let mapStartX = 0;
@@ -167,7 +167,7 @@ function debounce(func, delay) {
    ========================================================================== */
 
 /**
- * Transitions the hero background image.
+ * Transitions the hero background image
  */
 function swapHeroBackground(source) {
   if (visibleBackground.getAttribute("src") === source) {
@@ -257,16 +257,16 @@ seasonButtons.forEach((button) => {
  */
 function centerFeaturedEvent() {
   if (window.innerWidth > 900) {
-    eventsHolder.scrollLeft = 0;
+    carousel.scrollLeft = 0;
     return;
   }
 
-  const holderBounds = eventsHolder.getBoundingClientRect();
+  const holderBounds = carousel.getBoundingClientRect();
   const cardBounds = featuredEvent.getBoundingClientRect();
-  eventsHolder.scrollLeft +=
+  carousel.scrollLeft +=
     cardBounds.left -
     holderBounds.left -
-    (eventsHolder.clientWidth - featuredEvent.offsetWidth) / 2;
+    (carousel.clientWidth - featuredEvent.offsetWidth) / 2;
 }
 
 /**
@@ -296,276 +296,221 @@ window.addEventListener('load', centerCarousel);
 window.addEventListener('resize', optimizedResize);
 }
 
+
+
 /* ==========================================================================
    6. Interactive map
    ========================================================================== */
 
-/**
- * Returns minimum/maximum X and Y coordinate boundaries allowed for map dragging.
- */
-function getMapBounds() {
-  return {
-    minX: Math.min(0, mapWrapper.clientWidth - mapElement.offsetWidth),
-    maxX: 0,
-    minY: Math.min(0, mapWrapper.clientHeight - mapElement.offsetHeight),
-    maxY: 0,
-  };
-}
-
-/**
- * Constrains the current map values within limits and transforms CSS coordinates.
- */
-function updateMapPosition() {
-  const bounds = getMapBounds();
-  mapX = Math.min(bounds.maxX, Math.max(bounds.minX, mapX));
-  mapY = Math.min(bounds.maxY, Math.max(bounds.minY, mapY));
-  mapElement.style.setProperty("--map-x", `${mapX}px`);
-  mapElement.style.setProperty("--map-y", `${mapY}px`);
-}
-
-/**
- * Centers the map dynamically based on a custom device viewport aspect-ratio.
- */
-function setInitialMapPosition() {
-  const focusRatio = window.innerWidth <= 900 ? 0.56 : 0.5;
-  mapX = mapWrapper.clientWidth / 2 - mapElement.offsetWidth * focusRatio;
-  mapY = 0;
-  updateMapPosition();
-}
-
-/**
- * Hides the informational pin drawer overlay with an animated state transition.
- */
-function closePinInfo() {
-  const activePin = document.querySelector(".map-pointer.is-active");
-  activePin?.classList.remove("is-active");
-
-  if (pinInfo.hidden) {
-    return;
-  }
-
-  pinInfo.classList.remove("is-visible");
-  pinInfo.classList.add("is-closing");
-
-  window.setTimeout(() => {
-    if (!pinInfo.classList.contains("is-visible")) {
-      pinInfo.hidden = true;
-      pinInfo.classList.remove("is-closing");
-    }
-  }, 190);
-}
-
-/**
- * Checks constraints and adjusts layout horizontally to keep pins visible on mobile screen widths.
- */
-function keepPinVisible(pin) {
-  if (window.innerWidth > 900) {
-    return;
-  }
-
-  const wrapperBounds = mapWrapper.getBoundingClientRect();
-  const pinBounds = pin.getBoundingClientRect();
-  const safeLeft = wrapperBounds.left + 72;
-  const safeRight = wrapperBounds.right - 72;
-
-  if (pinBounds.left < safeLeft) {
-    mapX += safeLeft - pinBounds.left;
-  } else if (pinBounds.right > safeRight) {
-    mapX -= pinBounds.right - safeRight;
-  }
-
-  updateMapPosition();
-}
-
-/**
- * Sets targeted datasets/text contents inside the info layout and toggles active classes.
- */
-function openPinInfo(pin) {
-  mapPointers.forEach((item) => item.classList.toggle("is-active", item === pin));
-
-  const currentIcon = [...pinLocation.classList].find(c => c.startsWith('icon-'));
-  const newIcon = [...pin.classList].find(c => c.startsWith('icon-'));
-  pinLocation.classList.replace(currentIcon, newIcon);
-
-
-  pinLocation.dataset.value = pin.dataset.id;
-  pinTitle.textContent = pin.dataset.title;
-  pinDescription.textContent = pin.dataset.descr;
-  pinInfo.hidden = false;
-  pinInfo.classList.remove("is-closing");
-  // pinLocation
-  requestAnimationFrame(() => {
-    pinInfo.classList.add("is-visible");
-  });
-
-  keepPinVisible(pin);
-}
-
-// /**
-//  * Continuously increments coordinates to smoothly slide the map if an edge pan zone is triggered.
-//  */
-// function runEdgePan() {
-//   if (!panDirection || activePointerId !== null) {
-//     panFrame = null;
-//     return;
-//   }
-
-//   mapX += panDirection * 6;
-//   updateMapPosition();
-//   panFrame = requestAnimationFrame(runEdgePan);
-// }
-
-// /**
-//  * Finalizes drag movements, stops capturing the pointer tracking system and unsets active states.
-//  */
-// function finishMapDrag(event) {
-//   if (event.pointerId !== activePointerId) {
-//     return;
-//   }
-
-//   mapWrapper.releasePointerCapture(event.pointerId);
-//   mapWrapper.classList.remove("is-dragging");
-//   activePointerId = null;
-// }
-
-// // --- Map Event Listeners ---
-// if(mapWrapper){
-// mapWrapper.addEventListener("pointerdown", (event) => {
-//   if (event.target.closest(".map-pointer, .map-abs")) {
-//     return;
-//   }
-
-//   activePointerId = event.pointerId;
-//   dragStartX = event.clientX;
-//   dragStartY = event.clientY;
-//   mapStartX = mapX;
-//   mapStartY = mapY;
-//   mapWasDragged = false;
-//   mapWrapper.classList.add("is-dragging");
-//   mapWrapper.setPointerCapture(event.pointerId);
-// });
-
-// mapWrapper.addEventListener("pointermove", (event) => {
-//   if (event.pointerId !== activePointerId) {
-//     return;
-//   }
-
-//   const deltaX = event.clientX - dragStartX;
-//   const deltaY = event.clientY - dragStartY;
-//   mapWasDragged = mapWasDragged || Math.abs(deltaX) > 4 || Math.abs(deltaY) > 4;
-//   mapX = mapStartX + deltaX;
-//   mapY = mapStartY + deltaY;
-//   updateMapPosition();
-// });
-
-// mapWrapper.addEventListener("pointerup", finishMapDrag);
-// mapWrapper.addEventListener("pointercancel", finishMapDrag);
 if(mapWrapper){
-mapPointers.forEach((pin) => {
-  pin.addEventListener("click", (event) => {
-    if (mapWasDragged) {
-      event.preventDefault();
-      mapWasDragged = false;
-      return;
+
+  const isTouchDevice = window.matchMedia('(pointer: coarse)').matches;
+  let isHovered = false; // Tracks if the mouse is inside the wrapper
+
+  // 1. Shared Centering Function
+  function centerMap() {
+    const maxPanDistance = mapElement.offsetWidth - mapWrapper.offsetWidth;
+    if (maxPanDistance <= 0) return;
+
+    if (isTouchDevice) {
+        // Touch devices: Center by scrolling the wrapper container natively
+        console.log(maxPanDistance / 2)
+        mapWrapper.scrollLeft = maxPanDistance / 2;
+    } else {
+        // Desktop: Update target position for the animation loop
+        targetX = -(maxPanDistance / 2);
     }
+  }
+  // const isTouchDevice = window.matchMedia("(hover: none), (pointer: coarse)").matches;
 
-    openPinInfo(pin);
-  });
-});
+  // function centerMap() {
+  //   mapWrapper.scrollLeft = (mapElement.scrollWidth - mapWrapper.clientWidth) / 2;
+  // }
 
-closePinInfoButton.addEventListener("click", closePinInfo);
+  // // Ensure dimensions have been laid out before centering.
+  // requestAnimationFrame(centerMap);
+  // window.addEventListener("resize", centerMap);
 
-panZones.forEach((zone) => {
-  zone.addEventListener("pointerenter", () => {
-    panDirection = Number(zone.dataset.pan);
-    // if (!panFrame && activePointerId === null) {
-    //   panFrame = requestAnimationFrame(runEdgePan);
+  // 1. Feature Detection: Exit if the user is on a touch screen
+
+  if (!isTouchDevice) {
+    // 1. Core State Variables
+    let targetX = 0;       // Where the map wants to go based on mouse movement
+    let currentX = 0;      // Where the map actually is right now (smoothed)
+
+    // 2. Adjust these numbers to tweak the physics
+    const easeFactor = 0.03;  // Lower = slower/smoother pan. Higher = snappier.
+    const speedMultiplier = .35; // How much the map moves relative to mouse movement
+
+    // 2. Function to center the map horizontally
+    // function centerMap() {
+    //     const maxPanDistance = mapElement.offsetWidth - mapWrapper.offsetWidth;
+    //     // Safety check: only pan if the map is actually wider than the wrapper
+    //     if (maxPanDistance > 0) {
+    //         targetX = -(maxPanDistance / 2);
+    //     } else {
+    //         targetX = 0;
+    //     }
     // }
-  });
 
-  zone.addEventListener("pointerleave", () => {
-    panDirection = 0;
-  });
-});
-
-window.addEventListener('load', setInitialMapPosition);
-window.addEventListener('resize', debounce(setInitialMapPosition, 300));
-//-------------------- map smooth pan
-    // Physics constants (tweak these for different feel)
-    const FRICTION = 0.2;      // Lower = stops faster, Higher = more "slippery"
-    const SPRING_STIFF = .3;   // Force of the "pull" toward the mouse target
-
-    let containerWidth = 0;
-    let imageWidth = 0;
-    let maxScroll = 0;
-
-    let mouseX = 0;             // Current mouse position in pixels
-    let targetX = 0;            // Where the image "should" be based on mouse
-    let currentX = 0;           // Where the image actually is right now
-    let velX = 0;               // Current horizontal velocity
-
-    // Initialize dimensions
-    const updateSize = () => {
-        containerWidth = mapWrapper.offsetWidth;
-        imageWidth = mapElement.offsetWidth;  
-        // if(containerWidth < 1400){
-        //   imageWidth = mapElement.offsetWidth - 400;
-        // }else{
-        //   imageWidth = mapElement.offsetWidth;
-        // }
-          maxScroll = imageWidth - containerWidth;
-    };
-
-    // Update target based on mouse position
-    mapWrapper.addEventListener('pointermove', (e) => {
-        const rect = mapWrapper.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        
-        // Map mouse position (0 to containerWidth) to image offset (0 to -maxScroll)
-        // This ensures the image edges align with the container edges
-        const percentage = x / containerWidth;
-        targetX = -(percentage * maxScroll);
+    // 3. Track Mouse Movement
+    mapWrapper.addEventListener('mouseenter', () => isHovered = true);
+    // Center the map when the mouse leaves the wrapper area
+    mapWrapper.addEventListener('mouseleave', () => {
+        isHovered = false;
+        // centerMap();
     });
 
-    // The Animation Loop
-    function animate() {
-        // 1. Calculate the "Spring" force (distance to target)
-        const force = (targetX - currentX) * SPRING_STIFF;
-        
-        // 2. Update velocity and apply friction (Momentum)
-        velX += force;
-        velX *= FRICTION;
-        
-        // 3. Update position
-        currentX += velX;
 
-        // 4. Elastic Boundary Logic
-        // If currentX is beyond the left (0) or right (-maxScroll) bounds,
-        // we add a strong restorative force to pull it back.
-        if (currentX > 0) {
-            currentX += (0 - currentX) * 0.2; // Snap back to 0
-        } else if (currentX < -maxScroll) {
-            currentX += (-maxScroll - currentX) * 0.2; // Snap back to limit
-        }
+    mapWrapper.addEventListener('pointermove', (e) => {
+        if (!isHovered) return;
 
-        // Apply to DOM
+        // Calculate mouse position as a percentage (0 to 1) inside the wrapper
+        const rect = mapWrapper.getBoundingClientRect();
+        const mouseXPercentage = (e.clientX - rect.left) / rect.width;
+
+        // Determine the maximum distance the map can physically pan
+        const maxPanDistance = mapElement.offsetWidth - mapWrapper.offsetWidth;
+
+        // Calculate target position based on percentage (inverted to map natural direction)
+        // Moving mouse right moves map left, revealing hidden right content
+        targetX = -(mouseXPercentage * maxPanDistance) * speedMultiplier;
+
+        // Clamp targetX to ensure it never reveals empty space beyond bounds
+        targetX = Math.max(-maxPanDistance, Math.min(0, targetX));
+    });
+
+    // 4. Smooth Animation Loop (Lerp + Momentum)
+    function updatePan() {
+        // Distance between where the map is and where it wants to be
+        const distanceX = targetX - currentX;
+
+        // Linear interpolation creates the slow down / momentum glide effect
+        // currentX += distanceX * easeFactor;
+        currentX += (targetX - currentX) * easeFactor
+
+        // Apply the smoothed coordinate via hardware-accelerated transform
         mapElement.style.transform = `translateX(${currentX}px)`;
 
-        requestAnimationFrame(animate);
+        // Run continuously
+        requestAnimationFrame(updatePan);
     }
 
-    // Handle image load (to get width) and window resize
-    // mapElement.onload = () => {
-        updateSize();
-        // console.log('imageWidth= ' + imageWidth)
-        // Set initial position to center
-        targetX = -maxScroll / 2;
-        currentX = targetX;
-        animate();
-    // };
+    // centerMap();
+    // // Snap the current position immediately on first load so it doesn't visibly animate in
+    // currentX = targetX; 
+    // updatePan();
+  }
 
-    window.addEventListener('resize', updateSize);
+    // Start the loop
+    window.addEventListener('DOMContentLoaded', () => {
+    // A small timeout ensures the browser has fully calculated layout dimensions
+      setTimeout(() => {
+          centerMap();
+          if (!isTouchDevice) {
+              currentX = targetX; 
+              updatePan();
+          }
+      }, 50);
+    });
+
+    window.addEventListener('resize', () => {
+      if (isTouchDevice || !isHovered) {
+          centerMap();
+      }
+    });
+
+
+    /**  
+     * ========== PINS ======Hides the informational pin drawer overlay with an animated state transition.
+     */
+    function closePinInfo() {
+      const activePin = document.querySelector(".map-pointer.is-active");
+      activePin?.classList.remove("is-active");
+      if (pinInfo.hidden) {
+        return;
+      }
+      pinInfo.classList.remove("is-visible");
+      pinInfo.classList.add("is-closing");
+
+      window.setTimeout(() => {
+        if (!pinInfo.classList.contains("is-visible")) {
+          pinInfo.hidden = true;
+          pinInfo.classList.remove("is-closing");
+        }
+      }, 190);
+    }
+    /**
+     * Checks constraints and adjusts layout horizontally to keep pins visible on mobile screen widths.
+     */
+    function keepPinVisible(pin) {
+      if (window.innerWidth > 900) {
+        return;
+      }
+      const wrapperBounds = mapWrapper.getBoundingClientRect();
+      const pinBounds = pin.getBoundingClientRect();
+      const safeLeft = wrapperBounds.left + 72;
+      const safeRight = wrapperBounds.right - 72;
+
+      if (pinBounds.left < safeLeft) {
+        mapX += safeLeft - pinBounds.left;
+      } else if (pinBounds.right > safeRight) {
+        mapX -= pinBounds.right - safeRight;
+      }
+      updateMapPosition();
+    }
+    /**
+     * Sets targeted datasets/text contents inside the info layout and toggles active classes.
+     */
+    function openPinInfo(pin) {
+      mapPointers.forEach((item) => item.classList.toggle("is-active", item === pin));
+
+      const currentIcon = [...pinLocation.classList].find(c => c.startsWith('icon-'));
+      const newIcon = [...pin.classList].find(c => c.startsWith('icon-'));
+      pinLocation.classList.replace(currentIcon, newIcon);
+
+
+      pinLocation.dataset.value = pin.dataset.id;
+      pinTitle.textContent = pin.dataset.title;
+      pinDescription.textContent = pin.dataset.descr;
+      pinInfo.hidden = false;
+      pinInfo.classList.remove("is-closing");
+      // pinLocation
+      requestAnimationFrame(() => {
+        pinInfo.classList.add("is-visible");
+      });
+
+      keepPinVisible(pin);
+    }
+
+    mapPointers.forEach((pin) => {
+      pin.addEventListener("click", (event) => {
+        if (mapWasDragged) {
+          event.preventDefault();
+          mapWasDragged = false;
+          return;
+        }
+
+        openPinInfo(pin);
+      });
+    });
+
+    closePinInfoButton.addEventListener("click", closePinInfo);
+
+    panZones.forEach((zone) => {
+      zone.addEventListener("pointerenter", () => {
+        panDirection = Number(zone.dataset.pan);
+        // if (!panFrame && activePointerId === null) {
+        //   panFrame = requestAnimationFrame(runEdgePan);
+        // }
+      });
+
+      zone.addEventListener("pointerleave", () => {
+        panDirection = 0;
+      });
+    });
 }
+
 //-------------------- map smooth pan end
 /* ==========================================================================
    7. Scroll animations
