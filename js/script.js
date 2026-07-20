@@ -252,22 +252,6 @@ seasonButtons.forEach((button) => {
    5. Events
    ========================================================================== */
 
-/**
- * Scrolls the event container horizontally to put focus on the featured card.
- */
-function centerFeaturedEvent() {
-  if (window.innerWidth > 900) {
-    carousel.scrollLeft = 0;
-    return;
-  }
-
-  const holderBounds = carousel.getBoundingClientRect();
-  const cardBounds = featuredEvent.getBoundingClientRect();
-  carousel.scrollLeft +=
-    cardBounds.left -
-    holderBounds.left -
-    (carousel.clientWidth - featuredEvent.offsetWidth) / 2;
-}
 
 /**
  * Automatically calculates and centers carousel content, locking overflow if items fit.
@@ -280,10 +264,12 @@ function centerCarousel() {
   if (totalWidth <= visibleWidth) {
     carousel.style.overflowX = 'hidden';
     carousel.scrollLeft = 0;
+    console.log('test ' + totalWidth + ' ' + visibleWidth)
   } else {
     carousel.style.overflowX = 'auto';
     const centerPosition = (totalWidth - visibleWidth) / 2;
     carousel.scrollLeft = centerPosition;
+    console.log('test-auto ' + totalWidth + ' ' + visibleWidth)
   }
 }
 
@@ -430,13 +416,11 @@ if(mapWrapper){
       if (pinInfo.hidden) {
         return;
       }
-      pinInfo.classList.remove("is-visible");
-      pinInfo.classList.add("is-closing");
+      pinInfo.classList.remove("is-visible")
 
       window.setTimeout(() => {
         if (!pinInfo.classList.contains("is-visible")) {
           pinInfo.hidden = true;
-          pinInfo.classList.remove("is-closing");
         }
       }, 190);
     }
@@ -457,7 +441,7 @@ if(mapWrapper){
       } else if (pinBounds.right > safeRight) {
         mapX -= pinBounds.right - safeRight;
       }
-      updateMapPosition();
+      // updateMapPosition();
     }
     /**
      * Sets targeted datasets/text contents inside the info layout and toggles active classes.
@@ -467,18 +451,22 @@ if(mapWrapper){
 
       const currentIcon = [...pinLocation.classList].find(c => c.startsWith('icon-'));
       const newIcon = [...pin.classList].find(c => c.startsWith('icon-'));
-      pinLocation.classList.replace(currentIcon, newIcon);
-
-
-      pinLocation.dataset.value = pin.dataset.id;
-      pinTitle.textContent = pin.dataset.title;
-      pinDescription.textContent = pin.dataset.descr;
+      let delay = 0
+      if(pinInfo.hidden === false){ delay = 150 }
       pinInfo.hidden = false;
-      pinInfo.classList.remove("is-closing");
+      pinInfo.classList.remove("is-visible");
+
       // pinLocation
-      requestAnimationFrame(() => {
-        pinInfo.classList.add("is-visible");
-      });
+      setTimeout(() => {
+        pinLocation.classList.replace(currentIcon, newIcon);
+        pinLocation.dataset.value = pin.dataset.id;
+        pinTitle.textContent = pin.dataset.title;
+        pinDescription.textContent = pin.dataset.descr;
+
+        requestAnimationFrame(() => {
+          pinInfo.classList.add("is-visible");
+        })
+      }, delay)
 
       keepPinVisible(pin);
     }
@@ -530,7 +518,7 @@ function prepareScrollAnimations() {
   });
 
 document
-  .querySelectorAll(".history-info .info, .history-info .cover-carousel .gallery-item, .history-info .google-map")
+  .querySelectorAll(".history-info .info, .history-info .cover-carousel .gallery-item")
   .forEach((item) => item.classList.add("scroll-fade"));
 
   document.querySelectorAll(".history-info .text-reveal").forEach((element) => {
@@ -563,7 +551,7 @@ document
   });
 
   document.querySelectorAll(".event-card").forEach((card, index) => {
-    card.style.setProperty("--card-delay", `${250 + index * 150}ms`);
+    card.style.setProperty("--card-delay", `${250 + index * 100}ms`);
   });
 
   document.querySelectorAll(".news-item").forEach((card, index) => {

@@ -8,10 +8,10 @@
   <link rel="stylesheet" href="css/blaze.css">
   <link rel="stylesheet" href="css/zweifrags.popup.css">
 </head>
-<body>
+<body style="--bg-blur: #1d1505">
   <header class="site-header" data-js="site-header">
     <div class="header-content">
-      <a class="header-logo" href="#home" aria-label="Popeye Village home">
+      <a class="header-logo" href="/" aria-label="Popeye Village home">
         <img class="logo-default" src="assets/popeye-village-logo.svg" alt="Popeye Village">
       </a>
       <input class="-abs -vis-0" id="toggleMenuBtn" type="checkbox" name="">
@@ -52,21 +52,15 @@
     </div>
   </header>
 
-  <main id="home">
+  <main id="main" class="history">
     <section class="section hero-section -rnd-crop" aria-labelledby="hero-title" data-js="hero">
       <div class="hero-background" aria-hidden="true">
         <div class="pulse-anim">
         <img
           class="hero-bg-img is-visible"
-          src="assets/bg-img-summer.webp"
+          src="assets/history page/bg-img.jpg"
           alt=""
           data-js="hero-bg-current"
-        >
-        <img
-          class="hero-bg-img"
-          src="assets/bg-img-summer.webp"
-          alt=""
-          data-js="hero-bg-next"
         >
         </div>
       </div>
@@ -136,7 +130,7 @@
 
       <h2 class="sr-only" id="history-info-title">About Popeye Village and Robin Williams</h2>
       <article class="info type-1 info-hero-card">
-        <img class="history-bg-img" src="assets/history page/bg-img.png" alt="" aria-hidden="true">
+        <img class="history-bg-img" src="assets/history page/bg-img.jpg" alt="" aria-hidden="true">
         <div class="info-hldr">
           <div class="info-block  block-60">
             <h3 class="h2">About village</h3>
